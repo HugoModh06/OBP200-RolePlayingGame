@@ -31,7 +31,7 @@ class Program
     {
         Console.OutputEncoding = Encoding.UTF8;
         InitEnemyTemplates();
-
+        
         while (true)
         {
             ShowMainMenu();
@@ -71,7 +71,7 @@ class Program
         Console.Write("Ange namn: ");
         var name = (Console.ReadLine() ?? "").Trim();
         if (string.IsNullOrWhiteSpace(name)) name = "Namnlös";
-
+        
         Console.WriteLine("Välj klass: 1) Warrior  2) Mage  3) Rogue");
         Console.Write("Val: ");
         var k = (Console.ReadLine() ?? "").Trim();
@@ -85,6 +85,7 @@ class Program
             case "1": // Warrior: tankig
                 cls = "Warrior";
                 maxhp = 40; hp = 40; atk = 7; def = 5; potions = 2; gold = 15;
+                player.GeneratePlayer(new Warrior(), name);
                 break;
             case "2": // Mage: hög damage, låg def
                 cls = "Mage";
@@ -124,7 +125,7 @@ class Program
         Rooms.Add(new[] { "boss", "Urdraken" });
 
         CurrentRoomIndex = 0;
-
+        player.TestPrint();
         Console.WriteLine($"Välkommen, {name} the {cls}!");
         ShowStatus();
     }
