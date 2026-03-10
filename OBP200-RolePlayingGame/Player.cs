@@ -24,6 +24,13 @@ public class Player : Character
         Xp = 0;
     }
 
+    public void LevelUp()
+    {
+        Level++;
+        Xp = 0;
+        
+    }
+    
     public void TestPrint()
     {
         Console.WriteLine($"Name: {Name}");

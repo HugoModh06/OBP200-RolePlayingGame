@@ -450,6 +450,7 @@ class Program
     static bool IsPlayerDead()
     {
         return ParseInt(Player[2], 0) <= 0;
+        
     }
 
     static void AddPlayerXp(int amount)
