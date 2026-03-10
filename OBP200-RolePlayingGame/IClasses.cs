@@ -4,6 +4,15 @@ public interface IClasses
 {
     int[] GenerateClass(); //Ska returnera värden för klassen utifrån ett preset:[MaxHP, Atk, Def, potions, Gold]
     string ClassName { get; }
+    int MaxHp { get; }
+    int Atk { get; }
+    int Def { get; }
+    int Potions  { get; }
+    int Gold { get; }
+    
+    int HpModifer { get; }
+    int AtkModifer { get; }
+    int DefModifer { get; }
 }
 
 public class Warrior : IClasses
@@ -13,4 +22,14 @@ public class Warrior : IClasses
     {
         return [40, 7, 5, 2, 15]; 
     }
+
+    public int MaxHp => 40;
+    public int Atk => 7;
+    public int Def => 5;
+    public int Potions => 2;
+    public int Gold => 15;
+
+    public int HpModifer => 6;
+    public int AtkModifer => 2;
+    public int DefModifer => 2;
 }

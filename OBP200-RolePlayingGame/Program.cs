@@ -113,7 +113,7 @@ class Program
         Player[8] = "1";   // LEVEL
         Player[9] = potions.ToString();
         Player[10] = "Wooden Sword;Cloth Armor"; // inventory som semicolon-separerad sträng
-
+        
         // Initiera karta (linjärt äventyr)
         Rooms.Clear();
         Rooms.Add(new[] { "battle", "Skogsstig" });
@@ -472,7 +472,8 @@ class Program
         int xp = ParseInt(Player[7], 0);
         int lvl = ParseInt(Player[8], 1);
         int nextThreshold = lvl == 1 ? 10 : (lvl == 2 ? 25 : (lvl == 3 ? 45 : lvl * 20));
-
+        
+        //REMOVE LATER WHEN FULLY IMPLEMENTING PLAYER CLASS
         if (xp >= nextThreshold)
         {
             Player[8] = (lvl + 1).ToString();
@@ -498,12 +499,13 @@ class Program
                     maxhp += 4; atk += 3; def += 1;
                     break;
             }
-
+            
             Player[3] = maxhp.ToString();
             Player[4] = atk.ToString();
             Player[5] = def.ToString();
             Player[2] = maxhp.ToString(); // full heal vid level up
-
+            player.LevelUp();
+            player.TestPrint();
             Console.WriteLine($"Du når nivå {lvl + 1}! Värden ökade och HP återställd.");
         }
     }
