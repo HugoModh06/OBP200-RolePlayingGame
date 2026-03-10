@@ -8,6 +8,7 @@ public class Player : Character
     private int Potions;
     private int Level;
     private int Xp;
+    private List<Loot> Inventory;
     
     
     public void GeneratePlayer(IClasses classPreset, string name)
@@ -22,6 +23,9 @@ public class Player : Character
         Gold = Class.Gold;
         Level = 1;
         Xp = 0;
+        Inventory = new List<Loot>();
+        Inventory.Add(new Loot("Wooden Sword", 0 ));
+        Inventory.Add(new Loot("Cloth Armor", 0 ));
     }
     
 
@@ -48,9 +52,20 @@ public class Player : Character
         Console.WriteLine($"Xp: {Xp}");
         Console.WriteLine($"Level: {Level}");
     }
-    public void ShowStats()
+    public void ShowStatus()
     {
-        Console.WriteLine($"Name: {Name}");
+        Console.WriteLine($"[{Name} | {Class.ClassName}]  HP {CurrentHp}/{MaxHp}  ATK {Atk}  DEF {Def}  LVL {Level}  XP {Xp}  Guld {Gold}  Drycker {Potions}");
+        Console.Write("Väska:");
+        foreach (Loot loot in  Inventory)
+        {
+            Console.Write($"{loot.Name}; ");
+        }
+        Console.WriteLine();
+    }
+    
+    public void AddLoot(string name, int value)
+    {
+        Inventory.Add(new Loot(name, value));
     }
 
 }

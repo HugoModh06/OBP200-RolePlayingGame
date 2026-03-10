@@ -10,6 +10,7 @@ public interface IClasses
     int Potions  { get; }
     int Gold { get; }
     
+    //Hur mycket varje stat ska öka vid level up
     int HpModifer { get; }
     int AtkModifer { get; }
     int DefModifer { get; }

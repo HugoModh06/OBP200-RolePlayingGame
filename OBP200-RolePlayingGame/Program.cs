@@ -212,6 +212,7 @@ class Program
         {
             Console.WriteLine();
             ShowStatus();
+            player.ShowStatus();
             Console.WriteLine($"Fiende: {enemy[1]} HP={enemyHp}");
             Console.WriteLine("[A] Attack   [X] Special   [P] Dryck   [R] Fly");
             if (isBoss) Console.WriteLine("(Du kan inte fly från en boss!)");
@@ -517,11 +518,12 @@ class Program
         {
             string item = "Minor Gem";
             if (enemyName.Contains("Urdraken")) item = "Dragon Scale";
-
+            
+            
             var inv = (Player[10] ?? "").Trim();
             if (string.IsNullOrEmpty(inv)) Player[10] = item;
             else Player[10] = inv + ";" + item;
-
+            player.AddLoot("Minor Gem", 5);
             Console.WriteLine($"Föremål hittat: {item} (lagt i din väska)");
         }
     }
