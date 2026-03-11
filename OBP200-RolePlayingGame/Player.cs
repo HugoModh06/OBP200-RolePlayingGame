@@ -15,10 +15,10 @@ public class Player : Character
     {
         Name = name;
         Class = classPreset;
-        MaxHp = Class.MaxHp;
-        CurrentHp = MaxHp;
-        Atk = Class.Atk;
-        Def = Class.Def;
+        MaxHealth = Class.MaxHp;
+        CurrentHealth = MaxHealth;
+        Attack = Class.Attack;
+        Defence = Class.Defense;
         Potions = Class.Potions;
         Gold = Class.Gold;
         Level = 1;
@@ -33,28 +33,30 @@ public class Player : Character
     {
         Level++;
         Xp = 0;
-        MaxHp += Class.HpModifer;
-        CurrentHp = MaxHp; //Läks helt vid level up
-        Atk += Class.AtkModifer;
-        Def += Class.DefModifer;
+        MaxHealth += Class.HpModifer;
+        CurrentHealth = MaxHealth; //Läks helt vid level up
+        Attack += Class.AtkModifer;
+        Defence += Class.DefModifer;
     }
     
+    //TEST METHOD: REMOVE LATER
     public void TestPrint()
     {
         Console.WriteLine($"Name: {Name}");
         Console.WriteLine($"Class: {Class.ClassName}");
         Console.WriteLine($"Gold: {Gold}");
         Console.WriteLine($"Potions: {Potions}");
-        Console.WriteLine($"Max HP: {MaxHp}");
-        Console.WriteLine($"Current HP: {CurrentHp}");
-        Console.WriteLine($"Atk: {Atk}");
-        Console.WriteLine($"Def: {Def}");
+        Console.WriteLine($"Max HP: {MaxHealth}");
+        Console.WriteLine($"Current HP: {CurrentHealth}");
+        Console.WriteLine($"Atk: {Attack}");
+        Console.WriteLine($"Def: {Defence}");
         Console.WriteLine($"Xp: {Xp}");
         Console.WriteLine($"Level: {Level}");
     }
-    public void ShowStatus()
+    
+    public override void ShowStatus()
     {
-        Console.WriteLine($"[{Name} | {Class.ClassName}]  HP {CurrentHp}/{MaxHp}  ATK {Atk}  DEF {Def}  LVL {Level}  XP {Xp}  Guld {Gold}  Drycker {Potions}");
+        Console.WriteLine($"[{Name} | {Class.ClassName}]  HP {CurrentHealth}/{MaxHealth}  ATK {Attack}  DEF {Defence}  LVL {Level}  XP {Xp}  Guld {Gold}  Drycker {Potions}");
         Console.Write("Väska:");
         foreach (Loot loot in  Inventory)
         {
@@ -67,7 +69,7 @@ public class Player : Character
     {
         Inventory.Add(new Loot(name, value));
     }
-
+    
     public void SellLoot(string lootName)
     {
         int valueOfSoldLoot = 0;
@@ -90,4 +92,6 @@ public class Player : Character
             Console.WriteLine($"Du har ingen {lootName} att sälja.");
         }
     }
+    
+    
 }

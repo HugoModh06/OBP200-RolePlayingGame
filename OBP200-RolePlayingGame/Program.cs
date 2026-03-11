@@ -11,7 +11,8 @@ class Program
     // index: 0 Name, 1 Class, 2 HP, 3 MaxHP, 4 ATK, 5 DEF, 6 GOLD, 7 XP, 8 LEVEL, 9 POTIONS, 10 INVENTORY (semicolon-sep)
     static string[] Player = new string[11];
     static Player player = new Player();
-    
+
+    private static Enemy _enemy = new Enemy();
     // Rum: [type, label]
     // types: battle, treasure, shop, rest, boss
     static List<string[]> Rooms = new List<string[]>();
@@ -203,7 +204,9 @@ class Program
     {
         var enemy = GenerateEnemy(isBoss);
         Console.WriteLine($"En {enemy[1]} dyker upp! (HP {enemy[2]}, ATK {enemy[3]}, DEF {enemy[4]})");
-
+        
+        _enemy.GenerateEnemy(new Bandit());
+        _enemy.TestPrint();
         int enemyHp = ParseInt(enemy[2], 10);
         int enemyAtk = ParseInt(enemy[3], 3);
         int enemyDef = ParseInt(enemy[4], 0);
@@ -213,6 +216,7 @@ class Program
             Console.WriteLine();
             ShowStatus();
             player.ShowStatus();
+            _enemy.ShowStatus();
             Console.WriteLine($"Fiende: {enemy[1]} HP={enemyHp}");
             Console.WriteLine("[A] Attack   [X] Special   [P] Dryck   [R] Fly");
             if (isBoss) Console.WriteLine("(Du kan inte fly från en boss!)");
@@ -314,7 +318,7 @@ class Program
     {
         int atk = ParseInt(Player[4], 5);
         string cls = Player[1] ?? "Warrior";
-
+        
         // Beräkna grundskada
         int baseDmg = Math.Max(1, atk - (enemyDef / 2));
         int roll = Rng.Next(0, 3); // liten variation
