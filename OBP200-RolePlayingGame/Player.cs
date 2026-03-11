@@ -68,4 +68,26 @@ public class Player : Character
         Inventory.Add(new Loot(name, value));
     }
 
+    public void SellLoot(string lootName)
+    {
+        int valueOfSoldLoot = 0;
+        foreach (var loot in Inventory)
+        {
+            if (loot.Name == lootName)
+            {
+                valueOfSoldLoot+=loot.Value;
+            }
+        }
+        int amountSold = Inventory.RemoveAll(x => x.Name == lootName);
+
+        Gold += valueOfSoldLoot;
+        if (amountSold > 0)
+        {
+            Console.WriteLine($"Sålde {amountSold} {lootName} för {valueOfSoldLoot}. Ny total guld: {Gold}");
+        }
+        else
+        {
+            Console.WriteLine($"Du har ingen {lootName} att sälja.");
+        }
+    }
 }

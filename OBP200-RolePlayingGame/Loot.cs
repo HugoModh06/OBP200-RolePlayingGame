@@ -3,7 +3,7 @@ namespace OBP200_RolePlayingGame;
 public class Loot
 {
     public string Name;
-    private int Value; 
+    public int Value; 
     
     public  Loot(string name, int value)
     {
