@@ -42,6 +42,21 @@ public class Enemy : Character
             Console.WriteLine("(Du kan inte fly från en boss!)");
         }
     }
+    
+    public override int AttackCalculation(Character target)
+    {
+        int damage = Math.Max(1, Attack-(target.Defence/2));
+        int extraDamageRoll = Rng.Next(0, 3);
+        damage += extraDamageRoll;
+        
+        // Liten chans till "glancing blow" (minskad skada)
+        if (Rng.NextDouble() < 0.1)
+        {
+            damage = Math.Max(1, damage - 2);
+        }
+        return damage;
+    }
+    
     public void TestPrint()
     {
         Console.WriteLine($"Name: {_name}");

@@ -7,8 +7,6 @@ public abstract class Character
     protected int Attack;
     public int Defence{get; protected set;}
 
-    public virtual void ShowStatus()
-    {
-        
-    }
+    public abstract void ShowStatus();
+    public abstract int AttackCalculation(Character target);
 }

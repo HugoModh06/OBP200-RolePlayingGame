@@ -2,6 +2,7 @@ namespace OBP200_RolePlayingGame;
 
 public class Player : Character
 {
+    static readonly Random Rng = new Random();
     private string Name;
     private IClasses Class;
     private int Gold;
@@ -92,6 +93,14 @@ public class Player : Character
             Console.WriteLine($"Du har ingen {lootName} att sälja.");
         }
     }
-    
+
+    public override int AttackCalculation(Character target)
+    {
+        int damage = Math.Max(1, Attack-(target.Defence/2));
+        damage += Class.baseDamage;
+        int extraDamageRoll = Rng.Next(0, 3);
+        damage += extraDamageRoll;
+        return damage;
+    }
     
 }

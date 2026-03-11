@@ -14,6 +14,8 @@ public interface IClasses
     int HpModifer { get; }
     int AtkModifer { get; }
     int DefModifer { get; }
+
+    int baseDamage { get; }
 }
 
 public class Warrior : IClasses
@@ -33,4 +35,6 @@ public class Warrior : IClasses
     public int HpModifer => 6;
     public int AtkModifer => 2;
     public int DefModifer => 2;
+
+    public int baseDamage => 1;
 }
