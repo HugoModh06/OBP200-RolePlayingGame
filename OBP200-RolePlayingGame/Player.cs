@@ -34,7 +34,7 @@ public class Player : Character
     {
         Level++;
         Xp = 0;
-        MaxHealth += Class.HpModifer;
+        MaxHealth += Class.HeathLevelUpModifer;
         CurrentHealth = MaxHealth; //Läks helt vid level up
         Attack += Class.AtkModifer;
         Defence += Class.DefModifer;
@@ -101,6 +101,46 @@ public class Player : Character
         int extraDamageRoll = Rng.Next(0, 3);
         damage += extraDamageRoll;
         return damage;
+    }
+    
+    
+
+    public void Heal()
+    {
+        if (Potions <= 0)
+        {
+            Console.WriteLine("Du har inga drycker kvar.");
+            return;
+        }
+
+        // Helning av spelaren
+        const int healAmmount = 12;
+        int newHealth = Math.Min(MaxHealth, CurrentHealth + healAmmount);
+        CurrentHealth = newHealth;
+        Console.WriteLine($"Du dricker en dryck och återfår {newHealth - CurrentHealth} HP.");
+        Potions--;
+    }
+    
+    public override void TakeDamage(int damage)
+    {
+        CurrentHealth -= damage;
+    }
+    
+    public void UseSpecialAttack(Player player, Enemy target)
+    {
+        target.TakeDamage(Class.SpecialAttack(player, target));
+    }
+    
+    public override bool CheckIfDead()
+    {
+        if (CurrentHealth <= 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
 }

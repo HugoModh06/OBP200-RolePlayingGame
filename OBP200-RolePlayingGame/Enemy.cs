@@ -57,6 +57,23 @@ public class Enemy : Character
         return damage;
     }
     
+    public override void TakeDamage(int damage)
+    {
+        CurrentHealth -= damage;
+    }
+
+    public override bool CheckIfDead()
+    {
+        if (CurrentHealth <= 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public void TestPrint()
     {
         Console.WriteLine($"Name: {_name}");

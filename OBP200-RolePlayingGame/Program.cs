@@ -12,7 +12,7 @@ class Program
     static string[] Player = new string[11];
     static Player player = new Player();
 
-    private static Enemy _enemy = new Enemy();
+    static Enemy _enemy = new Enemy();
     // Rum: [type, label]
     // types: battle, treasure, shop, rest, boss
     static List<string[]> Rooms = new List<string[]>();
@@ -91,6 +91,7 @@ class Program
             case "2": // Mage: hög damage, låg def
                 cls = "Mage";
                 maxhp = 28; hp = 28; atk = 10; def = 2; potions = 2; gold = 15;
+                player.GeneratePlayer(new Mage(), name);
                 break;
             case "3": // Rogue: krit-chans
                 cls = "Rogue";
@@ -265,6 +266,10 @@ class Program
             Console.WriteLine($"{enemy[1]} anfaller och gör {enemyDamage} skada!");
         }
 
+        if (player.CheckIfDead())
+        {
+            return false;
+        }
         if (IsPlayerDead())
         {
             return false; // avsluta äventyr
@@ -332,7 +337,13 @@ class Program
                 baseDmg += 2; // mage buff
                 break;
             case "Rogue":
-                baseDmg += (Rng.NextDouble() < 0.2) ? 4 : 0; // rogue crit-chans
+                baseDmg += (Rng.NextDouble() < 0.2) ? 4 : 0; // rogue crit-chans (if else)
+
+                if (Rng.NextDouble() < 0.2)
+                    baseDmg += 4;
+                else
+                    baseDmg += 0;
+                
                 break;
             default:
                 baseDmg += 0;
@@ -350,6 +361,7 @@ class Program
         // Hantering av specialförmågor
         if (cls == "Warrior")
         {
+            player.UseSpecialAttack(player, _enemy);
             // Heavy Strike: hög skada men självskada
             Console.WriteLine("Warrior använder Heavy Strike!");
             int atk = ParseInt(Player[4], 5);
@@ -411,7 +423,6 @@ class Program
 
         // Liten chans till "glancing blow" (minskad skada)
         if (Rng.NextDouble() < 0.1) dmg = Math.Max(1, dmg - 2);
-
         return dmg;
     }
 
@@ -438,7 +449,7 @@ class Program
         int newHp = Math.Min(maxhp, hp + heal);
         Player[2] = newHp.ToString();
         Player[9] = (pot - 1).ToString();
-
+        
         Console.WriteLine($"Du dricker en dryck och återfår {newHp - hp} HP.");
     }
 
