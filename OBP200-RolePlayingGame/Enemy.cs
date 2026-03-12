@@ -4,18 +4,18 @@ public class Enemy : Character
 {
     static readonly Random Rng = new Random();
     private IEnemyType _type;
-    private string _name;
+    public string Name { get; private set; }
     private int _goldReward;
     private int _xpReward;
-    private bool _isBoss;
+    public bool IsBoss { get; private set; }
 
     public void GenerateEnemy(IEnemyType enemyType)
     {
         _type = enemyType;
-        _name=_type.Name;
-        _isBoss=_type.IsBoss;
+        Name=_type.Name;
+        IsBoss=_type.IsBoss;
         
-        if (_isBoss == false)
+        if (IsBoss == false)
         {
             MaxHealth = enemyType.MaxHealth+ Rng.Next(-1, 3);
             Attack = _type.Attack+ Rng.Next(0, 2);
@@ -36,8 +36,8 @@ public class Enemy : Character
 
     public override void ShowStatus()
     {
-        Console.WriteLine($"Fiende: {_name} HP={CurrentHealth}");
-        if (_isBoss)
+        Console.WriteLine($"Fiende: {Name} HP={CurrentHealth}");
+        if (IsBoss)
         {
             Console.WriteLine("(Du kan inte fly från en boss!)");
         }
@@ -54,12 +54,14 @@ public class Enemy : Character
         {
             damage = Math.Max(1, damage - 2);
         }
+        Console.WriteLine($"{Name} anfaller och gör {damage} skada!");
         return damage;
     }
     
     public override void TakeDamage(int damage)
     {
         CurrentHealth -= damage;
+        Console.WriteLine($"Du slog {Name} för {damage} skada.");
     }
 
     public override bool CheckIfDead()
@@ -76,7 +78,7 @@ public class Enemy : Character
 
     public void TestPrint()
     {
-        Console.WriteLine($"Name: {_name}");
+        Console.WriteLine($"Name: {Name}");
         Console.WriteLine($"Gold: {_goldReward}");
         Console.WriteLine($"Max HP: {MaxHealth}");
         Console.WriteLine($"Current HP: {CurrentHealth}");

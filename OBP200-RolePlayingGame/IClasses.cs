@@ -9,6 +9,7 @@ public interface IClasses
     int Defense { get; }
     int Potions  { get; }
     int Gold { get; }
+    double RunAwayFactor { get; }
     
     //Hur mycket varje stat ska öka vid level up
     int HeathLevelUpModifer { get; }
@@ -32,11 +33,12 @@ public class Warrior : IClasses
     public int Defense => 5;
     public int Potions => 2;
     public int Gold => 15;
+    public double RunAwayFactor => 0.25;
 
     public int HeathLevelUpModifer => 6;
     public int AtkModifer => 2;
     public int DefModifer => 2;
-
+    
     public int baseDamage => 1;
 
     public int SpecialAttack(Player player, Enemy enemy)
@@ -44,7 +46,13 @@ public class Warrior : IClasses
         Console.WriteLine("Warrior använder Heavy Strike!");
         int damage = Math.Max(2, player.Attack + 3 - enemy.Defence);
         player.TakeDamage(2); // självskada
+        if (enemy.IsBoss)
+        {
+            damage = (int)Math.Round(damage * 0.8);
+        }
+        Console.WriteLine($"Special! {enemy.Name} tar {damage} skada.");
         return damage;
+        
     }
 }
 
@@ -53,7 +61,7 @@ public class Mage : IClasses
     public string ClassName => "Mage";
     public int[] GenerateClass()
     {
-        return [40, 7, 5, 2, 15]; 
+        return [28, 10, 2, 2, 15]; 
     }
 
     public int MaxHp => 28;
@@ -61,6 +69,7 @@ public class Mage : IClasses
     public int Defense => 2;
     public int Potions => 2;
     public int Gold => 15;
+    public double RunAwayFactor => 0.35;
 
     public int HeathLevelUpModifer => 4;
     public int AtkModifer => 4;
@@ -83,6 +92,57 @@ public class Mage : IClasses
             Console.WriteLine("Inte tillräckligt med guld för att kasta Fireball (kostar 3).");
             damage = 0;
         }
+        if (enemy.IsBoss)
+        {
+            damage = (int)Math.Round(damage * 0.8);
+        }
+        Console.WriteLine($"Special! {enemy.Name} tar {damage} skada.");
+        return damage;
+    }
+}
+
+public class Rouge : IClasses
+{
+    public string ClassName => "Rouge";
+    public int[] GenerateClass()
+    {
+        return [40, 7, 5, 2, 15]; 
+    }
+
+    public int MaxHp => 40;
+    public int Attack => 7;
+    public int Defense => 5;
+    public int Potions => 2;
+    public int Gold => 15;
+    public double RunAwayFactor => 0.5;
+
+    public int HeathLevelUpModifer => 6;
+    public int AtkModifer => 2;
+    public int DefModifer => 2;
+    
+    public int baseDamage => 1;
+
+    public int SpecialAttack(Player player, Enemy enemy)
+    {
+        int damage;
+        Random rng = new Random();
+        if (rng.NextDouble() < 0.5)
+        {
+            Console.WriteLine("Rogue utför en lyckad Backstab!");
+            damage = Math.Max(4, player.Attack + 6);
+        }
+        else
+        {
+            Console.WriteLine("Backstab misslyckades!");
+            damage = 1;
+        }
+        
+        if (enemy.IsBoss)
+        {
+            damage = (int)Math.Round(damage * 0.8);
+        }
+        Console.WriteLine($"Special! {enemy.Name} tar {damage} skada.");
+
         return damage;
     }
 }

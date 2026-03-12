@@ -96,10 +96,12 @@ class Program
             case "3": // Rogue: krit-chans
                 cls = "Rogue";
                 maxhp = 32; hp = 32; atk = 8; def = 3; potions = 3; gold = 20;
+                player.GeneratePlayer(new Rouge(), name);
                 break;
             default:
                 cls = "Warrior";
                 maxhp = 40; hp = 40; atk = 7; def = 5; potions = 2; gold = 15;
+                player.GeneratePlayer(new Warrior(), name);
                 break;
         }
 
@@ -128,7 +130,6 @@ class Program
 
         CurrentRoomIndex = 0;
         Console.WriteLine($"Välkommen, {name} the {cls}!");
-        ShowStatus();
     }
 
     static void RunGameLoop()
@@ -214,31 +215,24 @@ class Program
         while (enemyHp > 0 && !IsPlayerDead())
         {
             Console.WriteLine();
-            ShowStatus();
             player.ShowStatus();
             _enemy.ShowStatus();
-            Console.WriteLine($"Fiende: {enemy[1]} HP={enemyHp}");
             Console.WriteLine("[A] Attack   [X] Special   [P] Dryck   [R] Fly");
-            if (isBoss) Console.WriteLine("(Du kan inte fly från en boss!)");
             Console.Write("Val: ");
 
             var cmd = (Console.ReadLine() ?? "").Trim().ToUpperInvariant();
 
             if (cmd == "A")
             {
-                int damage = CalculatePlayerDamage(enemyDef);
-                enemyHp -= damage;
-                Console.WriteLine($"Du slog {enemy[1]} för {damage} skada.");
+                _enemy.TakeDamage(player.AttackCalculation(_enemy));
             }
             else if (cmd == "X")
-            {
-                int special = UseClassSpecial(enemyDef, isBoss);
-                enemyHp -= special;
-                Console.WriteLine($"Special! {enemy[1]} tar {special} skada.");
+            { 
+                player.UseSpecialAttack(player, _enemy);
             }
             else if (cmd == "P")
             {
-                UsePotion();
+                player.Heal();
             }
             else if (cmd == "R" && !isBoss)
             {
@@ -260,9 +254,7 @@ class Program
             if (enemyHp <= 0) break;
 
             // Fiendens tur
-            int enemyDamage = CalculateEnemyDamage(enemyAtk);
-            ApplyDamageToPlayer(enemyDamage);
-            Console.WriteLine($"{enemy[1]} anfaller och gör {enemyDamage} skada!");
+            player.TakeDamage(_enemy.AttackCalculation(player));
         }
 
         if (player.CheckIfDead())
@@ -316,140 +308,6 @@ class Program
         EnemyTemplates.Add(new[] { "undead", "Skelett", "20", "5", "2", "7", "5" });
         EnemyTemplates.Add(new[] { "bandit", "Bandit", "16", "6", "1", "8", "6" });
         EnemyTemplates.Add(new[] { "slime", "Geléslem", "14", "3", "0", "5", "3" });
-    }
-
-    static int CalculatePlayerDamage(int enemyDef)
-    {
-        int atk = ParseInt(Player[4], 5);
-        string cls = Player[1] ?? "Warrior";
-        
-        // Beräkna grundskada
-        int baseDmg = Math.Max(1, atk - (enemyDef / 2));
-        int roll = Rng.Next(0, 3); // liten variation
-
-        switch (cls.Trim())
-        {
-            case "Warrior":
-                baseDmg += 1; // warrior buff
-                break;
-            case "Mage":
-                baseDmg += 2; // mage buff
-                break;
-            case "Rogue":
-                baseDmg += (Rng.NextDouble() < 0.2) ? 4 : 0; // rogue crit-chans (if else)
-
-                if (Rng.NextDouble() < 0.2)
-                    baseDmg += 4;
-                else
-                    baseDmg += 0;
-                
-                break;
-            default:
-                baseDmg += 0;
-                break;
-        }
-
-        return Math.Max(1, baseDmg + roll);
-    }
-
-    static int UseClassSpecial(int enemyDef, bool vsBoss)
-    {
-        string cls = Player[1] ?? "Warrior";
-        int specialDmg = 0;
-
-        // Hantering av specialförmågor
-        if (cls == "Warrior")
-        {
-            player.UseSpecialAttack(player, _enemy);
-            // Heavy Strike: hög skada men självskada
-            Console.WriteLine("Warrior använder Heavy Strike!");
-            int atk = ParseInt(Player[4], 5);
-            specialDmg = Math.Max(2, atk + 3 - enemyDef);
-            ApplyDamageToPlayer(2); // självskada
-        }
-        else if (cls == "Mage")
-        {
-            // Fireball: stor skada, kostar guld
-            int gold = ParseInt(Player[6], 0);
-            if (gold >= 3)
-            {
-                Console.WriteLine("Mage kastar Fireball!");
-                Player[6] = (gold - 3).ToString();
-                int atk = ParseInt(Player[4], 5);
-                specialDmg = Math.Max(3, atk + 5 - (enemyDef / 2));
-            }
-            else
-            {
-                Console.WriteLine("Inte tillräckligt med guld för att kasta Fireball (kostar 3).");
-                specialDmg = 0;
-            }
-        }
-        else if (cls == "Rogue")
-        {
-            // Backstab: chans att ignorera försvar, hög risk/hög belöning
-            if (Rng.NextDouble() < 0.5)
-            {
-                Console.WriteLine("Rogue utför en lyckad Backstab!");
-                int atk = ParseInt(Player[4], 5);
-                specialDmg = Math.Max(4, atk + 6);
-            }
-            else
-            {
-                Console.WriteLine("Backstab misslyckades!");
-                specialDmg = 1;
-            }
-        }
-        else
-        {
-            specialDmg = 0;
-        }
-
-        // Dämpa skada mot bossen
-        if (vsBoss)
-        {
-            specialDmg = (int)Math.Round(specialDmg * 0.8);
-        }
-
-        return Math.Max(0, specialDmg);
-    }
-
-    static int CalculateEnemyDamage(int enemyAtk)
-    {
-        int def = ParseInt(Player[5], 0);
-        int roll = Rng.Next(0, 3);
-
-        int dmg = Math.Max(1, enemyAtk - (def / 2)) + roll;
-
-        // Liten chans till "glancing blow" (minskad skada)
-        if (Rng.NextDouble() < 0.1) dmg = Math.Max(1, dmg - 2);
-        return dmg;
-    }
-
-    static void ApplyDamageToPlayer(int dmg)
-    {
-        int hp = ParseInt(Player[2], 0);
-        hp -= Math.Max(0, dmg);
-        Player[2] = Math.Max(0, hp).ToString();
-    }
-
-    static void UsePotion()
-    {
-        int pot = ParseInt(Player[9], 0);
-        if (pot <= 0)
-        {
-            Console.WriteLine("Du har inga drycker kvar.");
-            return;
-        }
-        int hp = ParseInt(Player[2], 0);
-        int maxhp = ParseInt(Player[3], 1);
-
-        // Helning av spelaren
-        int heal = 12;
-        int newHp = Math.Min(maxhp, hp + heal);
-        Player[2] = newHp.ToString();
-        Player[9] = (pot - 1).ToString();
-        
-        Console.WriteLine($"Du dricker en dryck och återfår {newHp - hp} HP.");
     }
 
     static bool TryRunAway()
@@ -594,20 +452,7 @@ class Program
         return true;
     }
 
-    static void TryBuy(int cost, Action apply, string successMsg)
-    {
-        int gold = ParseInt(Player[6], 0);
-        if (gold >= cost)
-        {
-            Player[6] = (gold - cost).ToString();
-            apply();
-            Console.WriteLine(successMsg);
-        }
-        else
-        {
-            Console.WriteLine("Du har inte råd.");
-        }
-    }
+    
     
 
     static bool DoRest()
@@ -619,17 +464,7 @@ class Program
         return true;
     }
 
-    // ======= Status =======
-
-    static void ShowStatus()
-    {
-        Console.WriteLine($"[{Player[0]} | {Player[1]}]  HP {Player[2]}/{Player[3]}  ATK {Player[4]}  DEF {Player[5]}  LVL {Player[8]}  XP {Player[7]}  Guld {Player[6]}  Drycker {Player[9]}");
-        var inv = (Player[10] ?? "");
-        if (!string.IsNullOrWhiteSpace(inv))
-        {
-            Console.WriteLine($"Väska: {inv}");
-        }
-    }
+    
     
     // ======= Hjälpmetoder =======
 

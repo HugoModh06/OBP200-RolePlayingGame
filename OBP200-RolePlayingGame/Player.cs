@@ -38,8 +38,11 @@ public class Player : Character
         Attack += Class.AtkModifer;
         Defence += Class.DefModifer;
     }
-    
-    
+
+    public bool TryRunAway()
+    {
+        return Rng.NextDouble() < Class.RunAwayFactor;
+    }
     
     public override void ShowStatus()
     {
