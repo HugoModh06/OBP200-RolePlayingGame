@@ -127,7 +127,6 @@ class Program
         Rooms.Add(new[] { "boss", "Urdraken" });
 
         CurrentRoomIndex = 0;
-        player.TestPrint();
         Console.WriteLine($"Välkommen, {name} the {cls}!");
         ShowStatus();
     }
@@ -487,41 +486,28 @@ class Program
         // Nivåtrösklar
         int xp = ParseInt(Player[7], 0);
         int lvl = ParseInt(Player[8], 1);
-        int nextThreshold = lvl == 1 ? 10 : (lvl == 2 ? 25 : (lvl == 3 ? 45 : lvl * 20));
+        int nextThreshold;
+
+        if (lvl == 1)
+        {
+            nextThreshold = 10;
+        }
+        else if (lvl == 2)
+        {
+            nextThreshold = 25;
+        }
+        else if (lvl == 3)
+        {
+            nextThreshold = 45;
+        }
+        else
+        {
+            nextThreshold = lvl * 20;
+        };
         
-        //REMOVE LATER WHEN FULLY IMPLEMENTING PLAYER CLASS
         if (xp >= nextThreshold)
         {
-            Player[8] = (lvl + 1).ToString();
-
-            // Uppgradering baserad på karaktärsklass
-            string cls = Player[1] ?? "Warrior";
-            int maxhp = ParseInt(Player[3], 1);
-            int atk = ParseInt(Player[4], 1);
-            int def = ParseInt(Player[5], 0);
-
-            switch (cls)
-            {
-                case "Warrior":
-                    maxhp += 6; atk += 2; def += 2;
-                    break;
-                case "Mage":
-                    maxhp += 4; atk += 4; def += 1;
-                    break;
-                case "Rogue":
-                    maxhp += 5; atk += 3; def += 1;
-                    break;
-                default:
-                    maxhp += 4; atk += 3; def += 1;
-                    break;
-            }
-            
-            Player[3] = maxhp.ToString();
-            Player[4] = atk.ToString();
-            Player[5] = def.ToString();
-            Player[2] = maxhp.ToString(); // full heal vid level up
             player.LevelUp();
-            player.TestPrint();
             Console.WriteLine($"Du når nivå {lvl + 1}! Värden ökade och HP återställd.");
         }
     }
@@ -570,7 +556,7 @@ class Program
         Console.WriteLine("En vandrande köpman erbjuder sina varor:");
         while (true)
         {
-            Console.WriteLine($"Guld: {Player[6]} | Drycker: {Player[9]}");
+            Console.WriteLine($"Guld: {player.Gold} | Drycker: {Player[9]}");
             Console.WriteLine("1) Köp dryck (10 guld)");
             Console.WriteLine("2) Köp vapen (+2 ATK) (25 guld)");
             Console.WriteLine("3) Köp rustning (+2 DEF) (25 guld)");
@@ -581,15 +567,15 @@ class Program
 
             if (val == "1")
             {
-                TryBuy(10, () => Player[9] = (ParseInt(Player[9], 0) + 1).ToString(), "Du köper en dryck.");
+                player.AttemptToBuy(10, 1, 1);
             }
             else if (val == "2")
             {
-                TryBuy(25, () => Player[4] = (ParseInt(Player[4], 0) + 2).ToString(), "Du köper ett bättre vapen.");
+                player.AttemptToBuy(25, 3, 2);
             }
             else if (val == "3")
             {
-                TryBuy(25, () => Player[5] = (ParseInt(Player[5], 0) + 2).ToString(), "Du köper bättre rustning.");
+                player.AttemptToBuy(25, 3, 2);
             }
             else if (val == "4")
             {

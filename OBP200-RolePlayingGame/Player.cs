@@ -5,7 +5,7 @@ public class Player : Character
     static readonly Random Rng = new Random();
     private string Name;
     private IClasses Class;
-    private int Gold;
+    public int Gold { get; set; }
     private int Potions;
     private int Level;
     private int Xp;
@@ -32,28 +32,14 @@ public class Player : Character
 
     public void LevelUp()
     {
-        Level++;
-        Xp = 0;
+        Level++; 
         MaxHealth += Class.HeathLevelUpModifer;
         CurrentHealth = MaxHealth; //Läks helt vid level up
         Attack += Class.AtkModifer;
         Defence += Class.DefModifer;
     }
     
-    //TEST METHOD: REMOVE LATER
-    public void TestPrint()
-    {
-        Console.WriteLine($"Name: {Name}");
-        Console.WriteLine($"Class: {Class.ClassName}");
-        Console.WriteLine($"Gold: {Gold}");
-        Console.WriteLine($"Potions: {Potions}");
-        Console.WriteLine($"Max HP: {MaxHealth}");
-        Console.WriteLine($"Current HP: {CurrentHealth}");
-        Console.WriteLine($"Atk: {Attack}");
-        Console.WriteLine($"Def: {Defence}");
-        Console.WriteLine($"Xp: {Xp}");
-        Console.WriteLine($"Level: {Level}");
-    }
+    
     
     public override void ShowStatus()
     {
@@ -65,10 +51,45 @@ public class Player : Character
         }
         Console.WriteLine();
     }
+
+    public void AddPlayerGold(int goldLoot)
+    {
+        Gold += goldLoot;
+    }
     
     public void AddLoot(string name, int value)
     {
         Inventory.Add(new Loot(name, value));
+    }
+
+    public void AttemptToBuy(int cost, int buffType, int buffStrength)
+    {
+        if (Gold >= cost)
+        {
+            switch (buffType)
+            {
+                case 1:
+                {
+                    Potions+=buffStrength;
+                    break;
+                }
+                case 2:
+                {
+                    Attack += buffStrength;
+                    break;
+                }
+                case 3:
+                {
+                    Defence += buffStrength;
+                    break;
+                }
+            }
+            Console.WriteLine($"Köp lyckats.");
+        }
+        else
+        {
+            Console.WriteLine("Köp misslyckat. Inte tillräckligt guld.");
+        }
     }
     
     public void SellLoot(string lootName)

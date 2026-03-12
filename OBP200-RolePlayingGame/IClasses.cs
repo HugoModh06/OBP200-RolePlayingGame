@@ -75,7 +75,7 @@ public class Mage : IClasses
         if (player.Gold >= 3)
         {
             Console.WriteLine("Mage kastar Fireball!");
-            
+            player.Gold -= 3;
             damage = Math.Max(3, player.Attack + 5 - (enemy.Defence / 2));
         }
         else
