@@ -124,6 +124,7 @@ public class Player : Character
                     break;
                 }
             }
+            Gold-=cost;
             Console.WriteLine($"Köp lyckats.");
         }
         else
@@ -158,7 +159,7 @@ public class Player : Character
     public override int AttackCalculation(Character target)
     {
         int damage = Math.Max(1, Attack-(target.Defence/2));
-        damage += _playerClassPreset.BaseDamage;
+        damage += _playerClassPreset.BaseDamage();
         int extraDamageRoll = Rng.Next(0, 3);
         damage += extraDamageRoll;
         return damage;

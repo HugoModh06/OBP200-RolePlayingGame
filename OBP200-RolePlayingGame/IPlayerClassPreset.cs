@@ -16,7 +16,7 @@ public interface IPlayerClassPreset
     int AtkModifer { get; }
     int DefModifer { get; }
 
-    int BaseDamage { get; }
+    int BaseDamage();
     int SpecialAttack(Player player, Enemy enemy);
 }
 
@@ -38,8 +38,11 @@ public class Warrior : IPlayerClassPreset
     public int HeathLevelUpModifer => 6;
     public int AtkModifer => 2;
     public int DefModifer => 2;
-    
-    public int BaseDamage => 1;
+
+    public int BaseDamage()
+    {
+        return 1;
+    }
 
     public int SpecialAttack(Player player, Enemy enemy)
     {
@@ -74,9 +77,11 @@ public class Mage : IPlayerClassPreset
     public int HeathLevelUpModifer => 4;
     public int AtkModifer => 4;
     public int DefModifer => 1;
-
-    public int BaseDamage => 2;
-
+    
+    public int BaseDamage()
+    {
+        return 2;
+    }
     public int SpecialAttack(Player player, Enemy enemy)
     {
         //Add gold removal
@@ -104,9 +109,10 @@ public class Mage : IPlayerClassPreset
 public class Rouge : IPlayerClassPreset
 {
     public string ClassName => "Rouge";
+
     public int[] GenerateClass()
     {
-        return [40, 7, 5, 2, 15]; 
+        return [40, 7, 5, 2, 15];
     }
 
     public int StartingMaxHeath => 40;
@@ -119,10 +125,19 @@ public class Rouge : IPlayerClassPreset
     public int HeathLevelUpModifer => 6;
     public int AtkModifer => 2;
     public int DefModifer => 2;
-    
-    public int BaseDamage => 1;
 
-    public int SpecialAttack(Player player, Enemy enemy)
+    public int BaseDamage() 
+    { 
+        Random Rng = new Random();
+        if (Rng.NextDouble() < 0.2)
+        {
+            return 4;
+        }
+
+        return 0;
+    }
+
+public int SpecialAttack(Player player, Enemy enemy)
     {
         int damage;
         Random rng = new Random();
