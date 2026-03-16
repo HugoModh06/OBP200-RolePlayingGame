@@ -5,7 +5,7 @@ public class Loot
     public string Name;
     public int Value; 
     
-    public  Loot(string name, int value)
+    public Loot(string name, int value)
     {
         Name = name;
         Value = value;

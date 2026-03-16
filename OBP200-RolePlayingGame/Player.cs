@@ -4,49 +4,86 @@ public class Player : Character
 {
     static readonly Random Rng = new Random();
     private string Name;
-    private IClasses Class;
+    private IPlayerClassPreset _playerClassPreset;
     public int Gold { get; set; }
-    private int Potions;
+    public int Potions { get; private set; }
     private int Level;
     private int Xp;
     private List<Loot> Inventory;
     
     
-    public void GeneratePlayer(IClasses classPreset, string name)
+    public void GeneratePlayer(IPlayerClassPreset playerClassPresetPreset, string name)
     {
         Name = name;
-        Class = classPreset;
-        MaxHealth = Class.MaxHp;
+        _playerClassPreset = playerClassPresetPreset;
+        MaxHealth = _playerClassPreset.StartingMaxHeath;
         CurrentHealth = MaxHealth;
-        Attack = Class.Attack;
-        Defence = Class.Defense;
-        Potions = Class.Potions;
-        Gold = Class.Gold;
+        Attack = _playerClassPreset.Attack;
+        Defence = _playerClassPreset.Defense;
+        Potions = _playerClassPreset.Potions;
+        Gold = _playerClassPreset.Gold;
         Level = 1;
         Xp = 0;
         Inventory = new List<Loot>();
         Inventory.Add(new Loot("Wooden Sword", 0 ));
         Inventory.Add(new Loot("Cloth Armor", 0 ));
+        
+        Console.WriteLine($"Välkommen, {Name} the {_playerClassPreset.ClassName}!");
+
     }
     
 
     public void LevelUp()
     {
         Level++; 
-        MaxHealth += Class.HeathLevelUpModifer;
+        MaxHealth += _playerClassPreset.HeathLevelUpModifer;
         CurrentHealth = MaxHealth; //Läks helt vid level up
-        Attack += Class.AtkModifer;
-        Defence += Class.DefModifer;
+        Attack += _playerClassPreset.AtkModifer;
+        Defence += _playerClassPreset.DefModifer;
     }
 
     public bool TryRunAway()
     {
-        return Rng.NextDouble() < Class.RunAwayFactor;
+        return Rng.NextDouble() < _playerClassPreset.RunAwayFactor;
+    }
+    
+    public void AddPlayerXp(int amount)
+    {
+        Xp+=amount;
+        MaybeLevelUp();
+    }
+    
+    private void MaybeLevelUp()
+    {
+        // Nivåtrösklar
+        int nextThreshold;
+        if (Level == 1)
+        {
+            nextThreshold = 10;
+        }
+        else if (Level == 2)
+        {
+            nextThreshold = 25;
+        }
+        else if (Level == 3)
+        {
+            nextThreshold = 45;
+        }
+        else
+        {
+            nextThreshold = Level * 20;
+        }
+        
+        if (Xp >= nextThreshold)
+        {
+            LevelUp();
+            Console.WriteLine($"Du når nivå {Level}! Värden ökade och HP återställd.");
+        }
     }
     
     public override void ShowStatus()
     {
-        Console.WriteLine($"[{Name} | {Class.ClassName}]  HP {CurrentHealth}/{MaxHealth}  ATK {Attack}  DEF {Defence}  LVL {Level}  XP {Xp}  Guld {Gold}  Drycker {Potions}");
+        Console.WriteLine($"[{Name} | {_playerClassPreset.ClassName}]  HP {CurrentHealth}/{MaxHealth}  ATK {Attack}  DEF {Defence}  LVL {Level}  XP {Xp}  Guld {Gold}  Drycker {Potions}");
         Console.Write("Väska:");
         foreach (Loot loot in  Inventory)
         {
@@ -121,15 +158,18 @@ public class Player : Character
     public override int AttackCalculation(Character target)
     {
         int damage = Math.Max(1, Attack-(target.Defence/2));
-        damage += Class.baseDamage;
+        damage += _playerClassPreset.BaseDamage;
         int extraDamageRoll = Rng.Next(0, 3);
         damage += extraDamageRoll;
         return damage;
     }
-    
-    
 
-    public void Heal()
+    public void HealThroughRest()
+    {
+        CurrentHealth=MaxHealth;
+    }
+
+    public void DrinkPotion()
     {
         if (Potions <= 0)
         {
@@ -152,19 +192,6 @@ public class Player : Character
     
     public void UseSpecialAttack(Player player, Enemy target)
     {
-        target.TakeDamage(Class.SpecialAttack(player, target));
+        target.TakeDamage(_playerClassPreset.SpecialAttack(player, target));
     }
-    
-    public override bool CheckIfDead()
-    {
-        if (CurrentHealth <= 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    
 }

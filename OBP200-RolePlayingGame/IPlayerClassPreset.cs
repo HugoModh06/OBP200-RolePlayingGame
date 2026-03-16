@@ -1,10 +1,10 @@
 namespace OBP200_RolePlayingGame;
 
-public interface IClasses
+public interface IPlayerClassPreset
 {
     int[] GenerateClass(); //Ska returnera värden för klassen utifrån ett preset:[MaxHP, Atk, Def, potions, Gold]
     string ClassName { get; }
-    int MaxHp { get; }
+    int StartingMaxHeath { get; }
     int Attack { get; }
     int Defense { get; }
     int Potions  { get; }
@@ -16,11 +16,11 @@ public interface IClasses
     int AtkModifer { get; }
     int DefModifer { get; }
 
-    int baseDamage { get; }
+    int BaseDamage { get; }
     int SpecialAttack(Player player, Enemy enemy);
 }
 
-public class Warrior : IClasses
+public class Warrior : IPlayerClassPreset
 {
     public string ClassName => "Warrior";
     public int[] GenerateClass()
@@ -28,7 +28,7 @@ public class Warrior : IClasses
         return [40, 7, 5, 2, 15]; 
     }
 
-    public int MaxHp => 40;
+    public int StartingMaxHeath => 40;
     public int Attack => 7;
     public int Defense => 5;
     public int Potions => 2;
@@ -39,7 +39,7 @@ public class Warrior : IClasses
     public int AtkModifer => 2;
     public int DefModifer => 2;
     
-    public int baseDamage => 1;
+    public int BaseDamage => 1;
 
     public int SpecialAttack(Player player, Enemy enemy)
     {
@@ -56,7 +56,7 @@ public class Warrior : IClasses
     }
 }
 
-public class Mage : IClasses
+public class Mage : IPlayerClassPreset
 {
     public string ClassName => "Mage";
     public int[] GenerateClass()
@@ -64,7 +64,7 @@ public class Mage : IClasses
         return [28, 10, 2, 2, 15]; 
     }
 
-    public int MaxHp => 28;
+    public int StartingMaxHeath => 28;
     public int Attack => 10;
     public int Defense => 2;
     public int Potions => 2;
@@ -75,7 +75,7 @@ public class Mage : IClasses
     public int AtkModifer => 4;
     public int DefModifer => 1;
 
-    public int baseDamage => 2;
+    public int BaseDamage => 2;
 
     public int SpecialAttack(Player player, Enemy enemy)
     {
@@ -101,7 +101,7 @@ public class Mage : IClasses
     }
 }
 
-public class Rouge : IClasses
+public class Rouge : IPlayerClassPreset
 {
     public string ClassName => "Rouge";
     public int[] GenerateClass()
@@ -109,7 +109,7 @@ public class Rouge : IClasses
         return [40, 7, 5, 2, 15]; 
     }
 
-    public int MaxHp => 40;
+    public int StartingMaxHeath => 40;
     public int Attack => 7;
     public int Defense => 5;
     public int Potions => 2;
@@ -120,7 +120,7 @@ public class Rouge : IClasses
     public int AtkModifer => 2;
     public int DefModifer => 2;
     
-    public int baseDamage => 1;
+    public int BaseDamage => 1;
 
     public int SpecialAttack(Player player, Enemy enemy)
     {

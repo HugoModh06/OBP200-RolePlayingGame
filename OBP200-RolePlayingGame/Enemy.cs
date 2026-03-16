@@ -5,8 +5,8 @@ public class Enemy : Character
     static readonly Random Rng = new Random();
     private IEnemyType _type;
     public string Name { get; private set; }
-    private int _goldReward;
-    private int _xpReward;
+    public int _goldReward{ get; private set;}
+    public int _xpReward { get; private set;}
     public bool IsBoss { get; private set; }
 
     public void GenerateEnemy(IEnemyType enemyType)
@@ -32,6 +32,8 @@ public class Enemy : Character
             _xpReward = _type.XpReward;
         }
         CurrentHealth = MaxHealth;
+        
+        Console.WriteLine($"En {Name} dyker upp! (HP {CurrentHealth}, ATK {Attack}, DEF {Defence})");
     }
 
     public override void ShowStatus()
@@ -42,6 +44,7 @@ public class Enemy : Character
             Console.WriteLine("(Du kan inte fly från en boss!)");
         }
     }
+    
     
     public override int AttackCalculation(Character target)
     {
@@ -64,17 +67,7 @@ public class Enemy : Character
         Console.WriteLine($"Du slog {Name} för {damage} skada.");
     }
 
-    public override bool CheckIfDead()
-    {
-        if (CurrentHealth <= 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    
 
     public void TestPrint()
     {
@@ -110,4 +103,47 @@ public class Bandit :IEnemyType
     public int GoldReward => 6;
     public bool IsBoss => false;
     public int XpReward => 8;
+}
+
+public class Beast :IEnemyType
+{
+    public string Name => "Vildsvin";
+    public int MaxHealth => 18;
+    public int Attack => 4;
+    public int Defence => 1;
+    public int GoldReward => 4;
+    public bool IsBoss => false;
+    public int XpReward => 6;
+}
+public class Slime :IEnemyType
+{
+    public string Name => "Geléslem";
+    public int MaxHealth => 14;
+    public int Attack => 3;
+    public int Defence => 0;
+    public int GoldReward => 3;
+    public bool IsBoss => false;
+    public int XpReward => 5;
+}
+
+public class Skeleton :IEnemyType
+{
+    public string Name => "Skelett";
+    public int MaxHealth => 20;
+    public int Attack => 5;
+    public int Defence => 2;
+    public int XpReward => 7;
+    public int GoldReward => 5;
+    public bool IsBoss => false;
+}
+
+public class Dragon :IEnemyType
+{
+    public string Name => "Urdraken";
+    public int MaxHealth => 20;
+    public int Attack => 5;
+    public int Defence => 2;
+    public int XpReward => 7;
+    public int GoldReward => 5;
+    public bool IsBoss => true;
 }
