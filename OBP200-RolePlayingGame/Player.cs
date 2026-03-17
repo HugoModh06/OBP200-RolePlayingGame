@@ -3,45 +3,48 @@ namespace OBP200_RolePlayingGame;
 public class Player : Character
 {
     static readonly Random Rng = new Random();
-    private string Name;
+    //private string Name;
     private IPlayerClassPreset _playerClassPreset;
     public int Gold { get; private set; }
     public int Potions { get; private set; }
-    private int Level;
-    private int Xp;
-    private List<Loot> Inventory;
+    private int _level;
+    private int _xp;
+    
+    //Spelarens förråd/väska där loot sparas
+    private List<Loot> _inventory =new();
     
     
+    //metod som sätter alla värden utifrån ett preset
     public void GeneratePlayer(IPlayerClassPreset playerClassPresetPreset, string name)
     {
         Name = name;
         _playerClassPreset = playerClassPresetPreset;
         MaxHealth = _playerClassPreset.StartingMaxHeath;
         CurrentHealth = MaxHealth;
-        Attack = _playerClassPreset.Attack;
-        Defence = _playerClassPreset.Defense;
-        Potions = _playerClassPreset.Potions;
-        Gold = _playerClassPreset.Gold;
-        Level = 1;
-        Xp = 0;
-        Inventory = new List<Loot>();
-        Inventory.Add(new Loot("Wooden Sword", 0 ));
-        Inventory.Add(new Loot("Cloth Armor", 0 ));
+        Attack = _playerClassPreset.StartingAttack;
+        Defence = _playerClassPreset.StartingDefence;
+        Potions = _playerClassPreset.StartingPotions;
+        Gold = _playerClassPreset.StartingGold;
+        _level = 1;
+        _xp = 0;
+        _inventory.Clear();
+        _inventory.Add(new Loot("Wooden Sword", 0 ));
+        _inventory.Add(new Loot("Cloth Armor", 0 ));
         
-        Console.WriteLine($"Välkommen, {Name} the {_playerClassPreset.ClassName}!");
-
+        Console.WriteLine($"Välkommen, {Name} the {_playerClassPreset.ClassPresetName}!");
     }
     
-
+    //Ökar level och stats utifrån klassens mall
     public void LevelUp()
     {
-        Level++; 
+        _level++; 
         MaxHealth += _playerClassPreset.HeathLevelUpModifer;
         CurrentHealth = MaxHealth; //Läks helt vid level up
         Attack += _playerClassPreset.AttackLevelUpModifer;
-        Defence += _playerClassPreset.DefenseLevelUpModifer;
+        Defence += _playerClassPreset.DefenceLevelUpModifer;
     }
-
+    
+    //försöka fly från striden, chansen beror på klassmallen
     public bool TryRunAway()
     {
         return Rng.NextDouble() < _playerClassPreset.RunAwayFactor;
@@ -49,7 +52,7 @@ public class Player : Character
     
     public void AddPlayerXp(int amount)
     {
-        Xp+=amount;
+        _xp+=amount;
         MaybeLevelUp();
     }
     
@@ -57,51 +60,58 @@ public class Player : Character
     {
         // Nivåtrösklar
         int nextThreshold;
-        if (Level == 1)
+        if (_level == 1)
         {
             nextThreshold = 10;
         }
-        else if (Level == 2)
+        else if (_level == 2)
         {
             nextThreshold = 25;
         }
-        else if (Level == 3)
+        else if (_level == 3)
         {
             nextThreshold = 45;
         }
         else
         {
-            nextThreshold = Level * 20;
+            nextThreshold = _level * 20;
         }
         
-        if (Xp >= nextThreshold)
+        if (_xp >= nextThreshold)
         {
             LevelUp();
-            Console.WriteLine($"Du når nivå {Level}! Värden ökade och HP återställd.");
+            Console.WriteLine($"Du når nivå {_level}! Värden ökade och HP återställd.");
         }
     }
     
     public override void ShowStatus()
     {
-        Console.WriteLine($"[{Name} | {_playerClassPreset.ClassName}]  HP {CurrentHealth}/{MaxHealth}  ATK {Attack}  DEF {Defence}  LVL {Level}  XP {Xp}  Guld {Gold}  Drycker {Potions}");
+        Console.WriteLine($"[{Name} | {_playerClassPreset.ClassPresetName}]  HP {CurrentHealth}/{MaxHealth}  ATK {Attack}  DEF {Defence}  LVL {_level}  XP {_xp}  Guld {Gold}  Drycker {Potions}");
         Console.Write("Väska:");
-        foreach (Loot loot in  Inventory)
+        foreach (Loot loot in  _inventory)
         {
             Console.Write($"{loot.Name}; ");
         }
         Console.WriteLine();
     }
-
+    
+    
     public void AddPlayerGold(int goldLoot)
     {
         Gold += goldLoot;
     }
     
+    public void RemoveGold(int amount)
+    {
+        Gold -= amount;
+    }
+    
     public void AddLoot(string name, int value)
     {
-        Inventory.Add(new Loot(name, value));
+        _inventory.Add(new Loot(name, value));
     }
-
+    
+    //försöka köpa ur butiken. buffType är vad man ska köpa (1 är potions, 2 attak och 3 defense) och strength är hur mycket de ökar
     public void AttemptToBuy(int cost, int buffType, int buffStrength)
     {
         if (Gold >= cost)
@@ -133,19 +143,22 @@ public class Player : Character
         }
     }
     
+    //försök sälja en typ av loot
     public void SellLoot(string lootName)
     {
         int valueOfSoldLoot = 0;
-        foreach (var loot in Inventory)
+        //loop som räknar ut sammanlagda värdet av all matchande loot
+        foreach (var loot in _inventory)
         {
             if (loot.Name == lootName)
             {
                 valueOfSoldLoot+=loot.Value;
             }
         }
-        int amountSold = Inventory.RemoveAll(x => x.Name == lootName);
+        int amountSold = _inventory.RemoveAll(x => x.Name == lootName); //tar bort alla matchande samt räknar ut hur många som såldes
 
-        Gold += valueOfSoldLoot;
+        AddPlayerGold(valueOfSoldLoot);
+        //kollar om man sålde något eller inte för att skriva rätt medeleande
         if (amountSold > 0)
         {
             Console.WriteLine($"Sålde {amountSold} {lootName} för {valueOfSoldLoot}. Ny total guld: {Gold}");
@@ -155,16 +168,19 @@ public class Player : Character
             Console.WriteLine($"Du har ingen {lootName} att sälja.");
         }
     }
-
-    public override int AttackCalculation(Character target)
+    
+    //Räknar ut hur mycket skada man gör
+    public override int CalculateDamafe(Character target)
     {
         int damage = Math.Max(1, Attack-(target.Defence/2));
-        damage += _playerClassPreset.BaseDamage();
+        damage += _playerClassPreset.BaseDamageModifer();
         int extraDamageRoll = Rng.Next(0, 3);
         damage += extraDamageRoll;
+        Console.WriteLine($"{Name} anfaller och gör {damage} skada!");
         return damage;
     }
-
+    
+    //heala genom att vila i ett vila rum
     public void HealThroughRest()
     {
         CurrentHealth=MaxHealth;
@@ -184,16 +200,6 @@ public class Player : Character
         CurrentHealth = newHealth;
         Console.WriteLine($"Du dricker en dryck och återfår {newHealth - CurrentHealth} HP.");
         Potions--;
-    }
-    
-    public override void TakeDamage(int damage)
-    {
-        CurrentHealth -= damage;
-    }
-
-    public void RemoveGold(int amount)
-    {
-        Gold -= amount;
     }
     
     public void UseSpecialAttack(Player player, Enemy target)

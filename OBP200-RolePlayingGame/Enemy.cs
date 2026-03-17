@@ -4,7 +4,7 @@ public class Enemy : Character
 {
     static readonly Random Rng = new Random();
     private IEnemyTypePresets _type;
-    public string Name { get; private set; }
+    //public string Name { get; private set; }
     public int _goldReward{ get; private set;}
     public int _xpReward { get; private set;}
     public bool IsBoss { get; private set; }
@@ -49,7 +49,7 @@ public class Enemy : Character
     }
     
     
-    public override int AttackCalculation(Character target)
+    public override int CalculateDamafe(Character target)
     {
         int damage = Math.Max(1, Attack-(target.Defence/2));
         int extraDamageRoll = Rng.Next(0, 3);
@@ -64,9 +64,8 @@ public class Enemy : Character
         return damage;
     }
     
-    public override void TakeDamage(int damage)
+    /*public override void TakeDamage(int damage)
     {
         CurrentHealth -= damage;
-        Console.WriteLine($"Du slog {Name} för {damage} skada.");
-    }
+    }*/
 }

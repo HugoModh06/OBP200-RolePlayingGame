@@ -3,24 +3,20 @@ namespace OBP200_RolePlayingGame;
 
 public class Warrior : IPlayerClassPreset
 {
-    public string ClassName => "Warrior";
-    public int[] GenerateClass()
-    {
-        return [40, 7, 5, 2, 15]; 
-    }
+    public string ClassPresetName => "Warrior";
 
     public int StartingMaxHeath => 40;
-    public int Attack => 7;
-    public int Defense => 5;
-    public int Potions => 2;
-    public int Gold => 15;
+    public int StartingAttack => 7;
+    public int StartingDefence => 5;
+    public int StartingPotions => 2;
+    public int StartingGold => 15;
     public double RunAwayFactor => 0.25;
 
     public int HeathLevelUpModifer => 6;
     public int AttackLevelUpModifer => 2;
-    public int DefenseLevelUpModifer => 2;
+    public int DefenceLevelUpModifer => 2;
 
-    public int BaseDamage()
+    public int BaseDamageModifer()
     {
         return 1;
     }

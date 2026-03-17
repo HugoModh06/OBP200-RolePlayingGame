@@ -2,24 +2,20 @@ namespace OBP200_RolePlayingGame;
 
 public class Mage : IPlayerClassPreset
 {
-    public string ClassName => "Mage";
-    public int[] GenerateClass()
-    {
-        return [28, 10, 2, 2, 15]; 
-    }
+    public string ClassPresetName => "Mage";
 
     public int StartingMaxHeath => 28;
-    public int Attack => 10;
-    public int Defense => 2;
-    public int Potions => 2;
-    public int Gold => 15;
+    public int StartingAttack => 10;
+    public int StartingDefence => 2;
+    public int StartingPotions => 2;
+    public int StartingGold => 15;
     public double RunAwayFactor => 0.35;
 
     public int HeathLevelUpModifer => 4;
     public int AttackLevelUpModifer => 4;
-    public int DefenseLevelUpModifer => 1;
+    public int DefenceLevelUpModifer => 1;
     
-    public int BaseDamage()
+    public int BaseDamageModifer()
     {
         return 2;
     }

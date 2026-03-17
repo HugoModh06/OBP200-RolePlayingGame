@@ -4,13 +4,16 @@ public abstract class Character
 {
     protected int CurrentHealth;
     protected int MaxHealth;
+    public string Name { get; protected set; }
     public int Attack { get; protected set; }
     public int Defence{get; protected set;}
 
     public abstract void ShowStatus();
-    public abstract int AttackCalculation(Character target);
-    public abstract void TakeDamage(int damage);
-    
+    public abstract int CalculateDamafe(Character target);
+    public void TakeDamage(int damage)
+    {
+        CurrentHealth -= damage;
+    }
     
     public bool CheckIfDead()
     {

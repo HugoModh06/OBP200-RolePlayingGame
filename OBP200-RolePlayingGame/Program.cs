@@ -21,8 +21,11 @@ class Program
     static List<string[]> Rooms = new List<string[]>();
 
     // Fiendemallar, 
-    static List<IEnemyTypePresets> EnemyTemplate = new List<IEnemyTypePresets>();
-
+    static List<IEnemyTypePresets> _enemyTemplates = new();
+    
+    //
+    private static List<IPlayerClassPreset> _playerTemplates = new();
+    
     // Status för kartan
     static int CurrentRoomIndex = 0;
 
@@ -35,13 +38,15 @@ class Program
     {
         Console.OutputEncoding = Encoding.UTF8;
         InitaliseEnemyTemplates();
+        InitalisePlayerTemplates();
         CreateLootTable();
         while (true)
         {
             ShowMainMenu();
             Console.Write("Välj: ");
             var choice = (Console.ReadLine() ?? "").Trim();
-
+            
+            
             if (choice == "1")
             {
                 StartNewGame();
@@ -76,26 +81,21 @@ class Program
         var name = (Console.ReadLine() ?? "").Trim();
         if (string.IsNullOrWhiteSpace(name)) name = "Namnlös";
         
-        Console.WriteLine("Välj klass: 1) Warrior  2) Mage  3) Rogue");
+        Console.WriteLine("Välj klass: 0) Warrior  1) Mage  2) Rouge");
         Console.Write("Val: ");
         var k = (Console.ReadLine() ?? "").Trim();
-
+        //förhindrar värden som inte är int
+        int classChoice = AtemptToParseInt(k, 0);
         
-        
-        switch (k)
+        //Mall för spelarens klass väljs baserad på värdet av inmatning. 
+        int playerTemplateListLength = _playerTemplates.Count - 1;
+        if (classChoice > playerTemplateListLength || classChoice<0)  //deafultar till en klass om instoppade värdet inte finns som ett index
         {
-            case "1": // Warrior: tankig
-                _player.GeneratePlayer(new Warrior(), name);
-                break;
-            case "2": // Mage: hög damage, låg def
-                _player.GeneratePlayer(new Mage(), name);
-                break;
-            case "3": // Rogue: krit-chans
-                _player.GeneratePlayer(new Rouge(), name);
-                break;
-            default:
-                _player.GeneratePlayer(new Warrior(), name);
-                break;
+            _player.GeneratePlayer(_playerTemplates[0], name);
+        }
+        else
+        {
+            _player.GeneratePlayer(_playerTemplates[classChoice], name);
         }
         
         _player.AddLoot("Wooden Sword", 0);
@@ -199,7 +199,7 @@ class Program
 
             if (cmd == "A")
             {
-                _enemy.TakeDamage(_player.AttackCalculation(_enemy));
+                _enemy.TakeDamage(_player.CalculateDamafe(_enemy));
             }
             else if (cmd == "X")
             { 
@@ -227,7 +227,7 @@ class Program
             if (_enemy.CheckIfDead()) break;
 
             // Fiendens tur
-            _player.TakeDamage(_enemy.AttackCalculation(_player));
+            _player.TakeDamage(_enemy.CalculateDamafe(_player));
         }
 
         if (_player.CheckIfDead())
@@ -256,7 +256,7 @@ class Program
         else
         {
             // Slumpa bland templates
-            var template = EnemyTemplate[Rng.Next(EnemyTemplate.Count)];
+            var template = _enemyTemplates[Rng.Next(_enemyTemplates.Count)];
             
             // Genererar fienden och sätter värden
             _enemy.GenerateEnemy(template);
@@ -266,10 +266,10 @@ class Program
     //Lägger till templates för fiender i listan för att senare slumpa fram en av dem vid strid
     static void InitaliseEnemyTemplates()
     {
-        EnemyTemplate.Add(new Skeleton());
-        EnemyTemplate.Add(new Bandit());
-        EnemyTemplate.Add(new Beast());
-        EnemyTemplate.Add(new Slime());
+        _enemyTemplates.Add(new Skeleton());
+        _enemyTemplates.Add(new Bandit());
+        _enemyTemplates.Add(new Beast());
+        _enemyTemplates.Add(new Slime());
     }
     
     
@@ -369,9 +369,15 @@ class Program
 
     
     
-    // ======= Hjälpmetoder =======
+    static void InitalisePlayerTemplates()
+    {
+        _playerTemplates.Add(new Warrior());
+        _playerTemplates.Add(new Mage());
+        _playerTemplates.Add(new Rouge());
 
-    static int ParseInt(string s, int fallback)
+    }
+    
+    static int AtemptToParseInt(string s, int fallback)
     {
         try
         {
