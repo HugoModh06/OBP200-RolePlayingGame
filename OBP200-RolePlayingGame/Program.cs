@@ -7,20 +7,21 @@ class Program
 {
     // ======= Globalt tillstånd  =======
     
-    
+    //player objekt, hanterar all/det mesta data om spelaren
     static Player _player = new Player();
-
+    
+    //en lista med olika typer av loot man kan få från kistor
     static List<Loot> _lootTable = new List<Loot>();
     
-    
-    
+    //enemy objekt, hanterar all/det mesta data om fiender
     static Enemy _enemy = new Enemy();
+    
     // Rum: [type, label]
     // types: battle, treasure, shop, rest, boss
     static List<string[]> Rooms = new List<string[]>();
 
-    // Fiendemallar
-    static List<IEnemyType> EnemyTemplate = new List<IEnemyType>();
+    // Fiendemallar, 
+    static List<IEnemyTypePresets> EnemyTemplate = new List<IEnemyTypePresets>();
 
     // Status för kartan
     static int CurrentRoomIndex = 0;
@@ -243,12 +244,13 @@ class Program
         
         return true;
     }
-
+    
+    //skapar en fiende utifrån ett template
     static void CreateEnemy(bool isBoss)
     {
         if (isBoss)
         {
-            // Boss-mall
+            // Genererar fienden och sätter värden utifrån en boss-mall istället för vanlig fiende
             _enemy.GenerateEnemy(new Dragon());
         }
         else
@@ -256,11 +258,12 @@ class Program
             // Slumpa bland templates
             var template = EnemyTemplate[Rng.Next(EnemyTemplate.Count)];
             
-            // Slmumpmässig justering av stats
+            // Genererar fienden och sätter värden
             _enemy.GenerateEnemy(template);
         }
     }
-
+    
+    //Lägger till templates för fiender i listan för att senare slumpa fram en av dem vid strid
     static void InitaliseEnemyTemplates()
     {
         EnemyTemplate.Add(new Skeleton());
@@ -273,15 +276,16 @@ class Program
 
     static void MaybeDropLoot(string enemyName)
     {
-        // Enkel loot-regel
+        // Enkel loot-regel, fiende har ca 35% chans att ge loot
         if (Rng.NextDouble() < 0.35)
         {
             string itemName = "Minor Gem";
             int itemValue = 5;
+            //om fienden är en drake får man en bättre bit loot
             if (enemyName.Contains("Urdraken"))
             {
                 itemName = "Dragon Scale";
-                itemValue = 5;
+                itemValue = 25;
             }
             
             _player.AddLoot(itemName, itemValue);
@@ -380,6 +384,7 @@ class Program
         }
     }
     
+    //skapar ett "loot table" med olika typer av loot man kan få från en kista och ger dem värde
     static void CreateLootTable()
     {
         _lootTable.Add(new Loot("Iron Dagger", 5));

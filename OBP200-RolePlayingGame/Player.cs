@@ -5,7 +5,7 @@ public class Player : Character
     static readonly Random Rng = new Random();
     private string Name;
     private IPlayerClassPreset _playerClassPreset;
-    public int Gold { get; set; }
+    public int Gold { get; private set; }
     public int Potions { get; private set; }
     private int Level;
     private int Xp;
@@ -38,8 +38,8 @@ public class Player : Character
         Level++; 
         MaxHealth += _playerClassPreset.HeathLevelUpModifer;
         CurrentHealth = MaxHealth; //Läks helt vid level up
-        Attack += _playerClassPreset.AtkModifer;
-        Defence += _playerClassPreset.DefModifer;
+        Attack += _playerClassPreset.AttackLevelUpModifer;
+        Defence += _playerClassPreset.DefenseLevelUpModifer;
     }
 
     public bool TryRunAway()
@@ -124,7 +124,7 @@ public class Player : Character
                     break;
                 }
             }
-            Gold-=cost;
+            RemoveGold(cost);
             Console.WriteLine($"Köp lyckats.");
         }
         else
@@ -189,6 +189,11 @@ public class Player : Character
     public override void TakeDamage(int damage)
     {
         CurrentHealth -= damage;
+    }
+
+    public void RemoveGold(int amount)
+    {
+        Gold -= amount;
     }
     
     public void UseSpecialAttack(Player player, Enemy target)

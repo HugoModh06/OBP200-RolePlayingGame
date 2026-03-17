@@ -1,5 +1,5 @@
 namespace OBP200_RolePlayingGame;
-
+//Abstrakt klass som både player och enemy ärver från då båda har liknande egenskaper
 public abstract class Character
 {
     protected int CurrentHealth;
@@ -10,6 +10,8 @@ public abstract class Character
     public abstract void ShowStatus();
     public abstract int AttackCalculation(Character target);
     public abstract void TakeDamage(int damage);
+    
+    
     public bool CheckIfDead()
     {
         if (CurrentHealth <= 0)
@@ -18,6 +20,5 @@ public abstract class Character
         }
         
         return false;
-        
     }
 }
