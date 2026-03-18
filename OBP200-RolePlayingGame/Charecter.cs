@@ -4,12 +4,12 @@ public abstract class Character
 {
     protected int CurrentHealth;
     protected int MaxHealth;
-    public string Name { get; protected set; }
+    protected string Name;
     public int Attack { get; protected set; }
-    public int Defence{get; protected set;}
+    public int Defence {get; protected set;}
 
     public abstract void ShowStatus();
-    public abstract int CalculateDamafe(Character target);
+    public abstract int CalculateDamage(Character target);
     public void TakeDamage(int damage)
     {
         CurrentHealth -= damage;
@@ -24,4 +24,9 @@ public abstract class Character
         
         return false;
     }
+}
+
+public interface IAttackCapable
+{
+    int CalculateDamage(Character target);
 }

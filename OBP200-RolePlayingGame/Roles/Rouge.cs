@@ -1,9 +1,8 @@
 namespace OBP200_RolePlayingGame;
 
-public class Rouge : IPlayerClassPreset
+public class Rouge : IPlayerRolePreset
 {
-    public string ClassPresetName => "Rouge";
-
+    public string RolePresetName => "Rouge";
     
 
     public int StartingMaxHeath => 40;
@@ -28,7 +27,7 @@ public class Rouge : IPlayerClassPreset
 
         return 0;
     }
-
+    
     public int SpecialAttack(Player player, Enemy enemy)
     {
         int damage;
@@ -50,9 +49,7 @@ public class Rouge : IPlayerClassPreset
         {
             damage = (int)Math.Round(damage * 0.8);
         }
-
-        Console.WriteLine($"Special! {enemy.Name} tar {damage} skada.");
-
+        
         return damage;
     }
 }

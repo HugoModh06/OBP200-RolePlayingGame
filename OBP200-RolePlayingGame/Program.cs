@@ -23,8 +23,8 @@ class Program
     // Fiendemallar, 
     static List<IEnemyTypePresets> _enemyTemplates = new();
     
-    //
-    private static List<IPlayerClassPreset> _playerTemplates = new();
+    //en lista med mallar för olika spelarklasser. 
+    private static List<IPlayerRolePreset> _playerTemplates = new();
     
     // Status för kartan
     static int CurrentRoomIndex = 0;
@@ -199,7 +199,7 @@ class Program
 
             if (cmd == "A")
             {
-                _enemy.TakeDamage(_player.CalculateDamafe(_enemy));
+                _enemy.TakeDamage(_player.CalculateDamage(_enemy));
             }
             else if (cmd == "X")
             { 
@@ -227,7 +227,7 @@ class Program
             if (_enemy.CheckIfDead()) break;
 
             // Fiendens tur
-            _player.TakeDamage(_enemy.CalculateDamafe(_player));
+            _player.TakeDamage(_enemy.CalculateDamage(_player));
         }
 
         if (_player.CheckIfDead())
@@ -236,11 +236,11 @@ class Program
         }
 
         // Vinstrapporter, XP, guld, loot
-        _player.AddPlayerXp(_enemy._xpReward);
-        _player.AddPlayerGold(_enemy._goldReward);
+        _player.AddPlayerXp(_enemy.ExperienceReward);
+        _player.AddPlayerGold(_enemy.GoldReward);
 
-        Console.WriteLine($"Seger! +{_enemy._xpReward} XP, +{_enemy._goldReward} guld.");
-        MaybeDropLoot(_enemy.Name);
+        Console.WriteLine($"Seger! +{_enemy.ExperienceReward} XP, +{_enemy.GoldReward} guld.");
+        _enemy.MaybeDropLoot(_player);
         
         return true;
     }
@@ -274,24 +274,7 @@ class Program
     
     
 
-    static void MaybeDropLoot(string enemyName)
-    {
-        // Enkel loot-regel, fiende har ca 35% chans att ge loot
-        if (Rng.NextDouble() < 0.35)
-        {
-            string itemName = "Minor Gem";
-            int itemValue = 5;
-            //om fienden är en drake får man en bättre bit loot
-            if (enemyName.Contains("Urdraken"))
-            {
-                itemName = "Dragon Scale";
-                itemValue = 25;
-            }
-            
-            _player.AddLoot(itemName, itemValue);
-            Console.WriteLine($"Föremål hittat: {itemName} (lagt i din väska)");
-        }
-    }
+    
 
     // ======= Rumshändelser =======
 
@@ -313,13 +296,13 @@ class Program
         }
         return true;
     }
-
+    
     static bool DoShop()
     {
         Console.WriteLine("En vandrande köpman erbjuder sina varor:");
         while (true)
         {
-            Console.WriteLine($"Guld: {_player.Gold} | Drycker: {_player.Potions}");
+            _player.PrintShopRelevantStats();
             Console.WriteLine("1) Köp dryck (10 guld)");
             Console.WriteLine("2) Köp vapen (+2 ATK) (25 guld)");
             Console.WriteLine("3) Köp rustning (+2 DEF) (25 guld)");
@@ -374,7 +357,6 @@ class Program
         _playerTemplates.Add(new Warrior());
         _playerTemplates.Add(new Mage());
         _playerTemplates.Add(new Rouge());
-
     }
     
     static int AtemptToParseInt(string s, int fallback)

@@ -5,8 +5,8 @@ public class Enemy : Character
     static readonly Random Rng = new Random();
     private IEnemyTypePresets _type;
     //public string Name { get; private set; }
-    public int _goldReward{ get; private set;}
-    public int _xpReward { get; private set;}
+    public int GoldReward{ get; private set;}
+    public int ExperienceReward { get; private set;}
     public bool IsBoss { get; private set; }
 
     public void GenerateEnemy(IEnemyTypePresets enemyType)
@@ -22,8 +22,8 @@ public class Enemy : Character
             MaxHealth = enemyType.MaxHealth+ Rng.Next(-1, 3);
             Attack = _type.Attack+ Rng.Next(0, 2);
             Defence = _type.Defence + Rng.Next(0, 2);
-            _goldReward = _type.GoldReward+ Rng.Next(0, 3);
-            _xpReward = _type.XpReward+ Rng.Next(0, 3);
+            GoldReward = _type.GoldReward+ Rng.Next(0, 3);
+            ExperienceReward = _type.XpReward+ Rng.Next(0, 3);
         }
         else
         {
@@ -31,8 +31,8 @@ public class Enemy : Character
             MaxHealth = enemyType.MaxHealth;
             Attack = _type.Attack;
             Defence = _type.Defence;
-            _goldReward = _type.GoldReward;
-            _xpReward = _type.XpReward;
+            GoldReward = _type.GoldReward;
+            ExperienceReward = _type.XpReward;
         }
         CurrentHealth = MaxHealth;
         
@@ -49,7 +49,7 @@ public class Enemy : Character
     }
     
     
-    public override int CalculateDamafe(Character target)
+    public override int CalculateDamage(Character target)
     {
         int damage = Math.Max(1, Attack-(target.Defence/2));
         int extraDamageRoll = Rng.Next(0, 3);
@@ -64,8 +64,22 @@ public class Enemy : Character
         return damage;
     }
     
-    /*public override void TakeDamage(int damage)
+    public void MaybeDropLoot(Player player)
     {
-        CurrentHealth -= damage;
-    }*/
+        // Enkel loot-regel, fiende har ca 35% chans att ge loot
+        if (Rng.NextDouble() < 0.35)
+        {
+            string itemName = "Minor Gem";
+            int itemValue = 5;
+            //om fienden är en drake får man en bättre bit loot
+            if (Name.Contains("Urdraken"))
+            {
+                itemName = "Dragon Scale";
+                itemValue = 25;
+            }
+            
+            player.AddLoot(itemName, itemValue);
+            Console.WriteLine($"Föremål hittat: {itemName} (lagt i din väska)");
+        }
+    }
 }

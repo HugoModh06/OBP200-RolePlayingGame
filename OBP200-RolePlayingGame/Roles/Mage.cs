@@ -1,8 +1,8 @@
 namespace OBP200_RolePlayingGame;
 
-public class Mage : IPlayerClassPreset
+public class Mage : IPlayerRolePreset
 {
-    public string ClassPresetName => "Mage";
+    public string RolePresetName => "Mage";
 
     public int StartingMaxHeath => 28;
     public int StartingAttack => 10;
@@ -41,7 +41,6 @@ public class Mage : IPlayerClassPreset
         {
             damage = (int)Math.Round(damage * 0.8);
         }
-        Console.WriteLine($"Special! {enemy.Name} tar {damage} skada.");
         return damage;
     }
 }

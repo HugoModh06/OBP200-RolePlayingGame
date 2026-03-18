@@ -1,9 +1,9 @@
 namespace OBP200_RolePlayingGame;
 
 
-public class Warrior : IPlayerClassPreset
+public class Warrior : IPlayerRolePreset
 {
-    public string ClassPresetName => "Warrior";
+    public string RolePresetName => "Warrior";
 
     public int StartingMaxHeath => 40;
     public int StartingAttack => 7;
@@ -33,7 +33,6 @@ public class Warrior : IPlayerClassPreset
         {
             damage = (int)Math.Round(damage * 0.8);
         }
-        Console.WriteLine($"Special! {enemy.Name} tar {damage} skada.");
         return damage;
     }
 }
