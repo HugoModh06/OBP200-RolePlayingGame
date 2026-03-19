@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace OBP200_RolePlayingGame;
 
@@ -24,7 +26,7 @@ class Program
     static List<IEnemyTypePresets> _enemyTemplates = new();
     
     //en lista med mallar för olika spelarklasser. 
-    private static List<IPlayerRolePreset> _playerTemplates = new();
+    private static List<IPlayerRolePresets> _playerTemplates = new();
     
     // Status för kartan
     static int CurrentRoomIndex = 0;
@@ -203,7 +205,7 @@ class Program
             }
             else if (cmd == "X")
             { 
-                _player.UseSpecialAttack(_player, _enemy);
+                _player.UseSpecialAttack(_enemy);
             }
             else if (cmd == "P")
             {

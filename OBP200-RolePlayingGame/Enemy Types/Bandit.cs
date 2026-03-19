@@ -8,5 +8,5 @@ public class Bandit :IEnemyTypePresets
     public int Defence => 1;
     public int GoldReward => 6;
     public bool IsBoss => false;
-    public int XpReward => 8;
+    public int ExperienceReward => 8;
 }

@@ -8,6 +8,6 @@ public interface IEnemyTypePresets
     int Defence { get; }
     int MaxHealth { get; }
     bool IsBoss { get; }
-    int XpReward { get; }
+    int ExperienceReward { get; }
     int GoldReward { get; }
 }

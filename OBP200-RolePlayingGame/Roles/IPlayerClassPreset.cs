@@ -1,6 +1,6 @@
 namespace OBP200_RolePlayingGame;
 
-public interface IPlayerRolePreset
+public interface IPlayerRolePresets
 {
     //Standardvärden för varje klass som sätts vid start
     string RolePresetName { get; }
@@ -20,6 +20,4 @@ public interface IPlayerRolePreset
     
     //base damage tillläg för klasser, samt hanterar critical hits för rouge
     int BaseDamageModifer();
-    //speciella attaker som är unika för varje klass
-    int SpecialAttack(Player player, Enemy enemy);
 }

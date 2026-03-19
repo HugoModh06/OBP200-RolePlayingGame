@@ -1,14 +1,16 @@
+using System;
+
 namespace OBP200_RolePlayingGame;
 
 public class Enemy : Character
 {
     static readonly Random Rng = new Random();
     private IEnemyTypePresets _type;
-    //public string Name { get; private set; }
     public int GoldReward{ get; private set;}
     public int ExperienceReward { get; private set;}
     public bool IsBoss { get; private set; }
-
+    
+    //skapar en fiende baserad på en mall
     public void GenerateEnemy(IEnemyTypePresets enemyType)
     {
         _type = enemyType;
@@ -23,7 +25,7 @@ public class Enemy : Character
             Attack = _type.Attack+ Rng.Next(0, 2);
             Defence = _type.Defence + Rng.Next(0, 2);
             GoldReward = _type.GoldReward+ Rng.Next(0, 3);
-            ExperienceReward = _type.XpReward+ Rng.Next(0, 3);
+            ExperienceReward = _type.ExperienceReward+ Rng.Next(0, 3);
         }
         else
         {
@@ -32,7 +34,7 @@ public class Enemy : Character
             Attack = _type.Attack;
             Defence = _type.Defence;
             GoldReward = _type.GoldReward;
-            ExperienceReward = _type.XpReward;
+            ExperienceReward = _type.ExperienceReward;
         }
         CurrentHealth = MaxHealth;
         

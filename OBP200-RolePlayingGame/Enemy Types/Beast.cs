@@ -8,5 +8,5 @@ public class Beast :IEnemyTypePresets
     public int Defence => 1;
     public int GoldReward => 4;
     public bool IsBoss => false;
-    public int XpReward => 6;
+    public int ExperienceReward => 6;
 } 

@@ -5,7 +5,7 @@ public abstract class Character
     protected int CurrentHealth;
     protected int MaxHealth;
     protected string Name;
-    public int Attack { get; protected set; }
+    protected int Attack;
     public int Defence {get; protected set;}
 
     public abstract void ShowStatus();

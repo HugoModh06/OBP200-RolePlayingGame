@@ -1,11 +1,13 @@
+using System;
+using System.Collections.Generic;
+
 namespace OBP200_RolePlayingGame;
 
-public class Player : Character, IAttackCapable
+public class Player : Character
 {
     static readonly Random Rng = new Random();
-    //private string Name;
-    private IPlayerRolePreset _playerRolePreset;
-    public int Gold { get; private set; }
+    private IPlayerRolePresets _playerRolePreset;
+    private int _gold;
     private int _potions;
     private int _level;
     private int _experience;
@@ -15,7 +17,7 @@ public class Player : Character, IAttackCapable
     
     
     //metod som sätter alla värden utifrån en mall
-    public void GeneratePlayer(IPlayerRolePreset playerClassPresetPreset, string name)
+    public void GeneratePlayer(IPlayerRolePresets playerClassPresetPreset, string name)
     {
         Name = name;
         _playerRolePreset = playerClassPresetPreset;
@@ -24,7 +26,7 @@ public class Player : Character, IAttackCapable
         Attack = _playerRolePreset.StartingAttack;
         Defence = _playerRolePreset.StartingDefence;
         _potions = _playerRolePreset.StartingPotions;
-        Gold = _playerRolePreset.StartingGold;
+        _gold = _playerRolePreset.StartingGold;
         _level = 1;
         _experience = 0;
         _inventory.Clear();
@@ -89,7 +91,7 @@ public class Player : Character, IAttackCapable
     //skriver ut ens stats när man är i combat
     public override void ShowStatus()
     {
-        Console.WriteLine($"[{Name} | {_playerRolePreset.RolePresetName}]  HP {CurrentHealth}/{MaxHealth}  ATK {Attack}  DEF {Defence}  LVL {_level}  XP {_experience}  Guld {Gold}  Drycker {_potions}");
+        Console.WriteLine($"[{Name} | {_playerRolePreset.RolePresetName}]  HP {CurrentHealth}/{MaxHealth}  ATK {Attack}  DEF {Defence}  LVL {_level}  XP {_experience}  Guld {_gold}  Drycker {_potions}");
         Console.Write("Väska:");
         foreach (Loot loot in  _inventory)
         {
@@ -101,15 +103,15 @@ public class Player : Character, IAttackCapable
     
     public void AddPlayerGold(int goldLoot)
     {
-        Gold += goldLoot;
+        _gold += goldLoot;
     }
-    
-    public void RemoveGold(int amount)
+
+    private void RemoveGold(int amount)
     {
-        Gold -= amount;
-        if (Gold < 0)
+        _gold -= amount;
+        if (_gold < 0)
         {
-            Gold = 0;
+            _gold = 0;
         }
     }
     
@@ -121,7 +123,7 @@ public class Player : Character, IAttackCapable
     //försöka köpa ur butiken. buffType är vad man ska köpa (1 är potions, 2 attak och 3 defense) och strength är hur mycket de ökar
     public void AttemptToBuy(int cost, int buffType, int buffStrength)
     {
-        if (Gold >= cost)
+        if (_gold >= cost)
         {
             switch (buffType)
             {
@@ -168,7 +170,7 @@ public class Player : Character, IAttackCapable
         //kollar om man sålde något eller inte för att skriva rätt medeleande
         if (amountSold > 0)
         {
-            Console.WriteLine($"Sålde {amountSold} {lootName} för {valueOfSoldLoot}. Ny total guld: {Gold}");
+            Console.WriteLine($"Sålde {amountSold} {lootName} för {valueOfSoldLoot}. Ny total guld: {_gold}");
         }
         else
         {
@@ -196,7 +198,7 @@ public class Player : Character, IAttackCapable
     //skriver ut värden som är relevanta för när man är i shop
     public void PrintShopRelevantStats()
     {
-        Console.WriteLine($"Guld: {Gold} | Drycker: {_potions}");
+        Console.WriteLine($"Guld: {_gold} | Drycker: {_potions}");
     }
     
     public void DrinkPotion()
@@ -215,10 +217,87 @@ public class Player : Character, IAttackCapable
         _potions--;
     }
     
-    public void UseSpecialAttack(Player player, Enemy target)
+    public void UseSpecialAttack(Enemy target)
     {
-        int damage = _playerRolePreset.SpecialAttack(player, target);
+        int damage;
+        //väljer vilken specialattack som används. Om den inte har en registrerad klass (vilket borde vara omöjligt) körs Warrior som standard, samma som i ursprungsprogrammet
+        switch (_playerRolePreset)
+        {
+            case Warrior:
+            {
+                damage = WarriorSpecialAttack(target);
+                break;
+            }
+            case Mage:
+            {
+                damage = MageSpecialAttack(target);
+                break;
+            }
+            case Rouge:
+            {
+                damage = RougeSpecialAttack();
+                break;
+            }
+            default:
+            {
+                damage=WarriorSpecialAttack(target);
+                break;
+            }
+        }
+        
+        //bossfiender tar 20% mindre damage av en backstab
+        if (target.IsBoss)
+        {
+            damage = (int)Math.Round(damage * 0.8);
+        }
+        
         target.TakeDamage(damage);
         Console.WriteLine($"Special! {Name} anfaller och gör {damage} skada.");
+    }
+
+    private int RougeSpecialAttack()
+    {
+        int damage;
+         
+        //specialattak som har chans att ignorera fiendens defence stat, annars gör bara 1 skada
+        if (Rng.NextDouble() < 0.5)
+        {
+            Console.WriteLine("Rogue utför en lyckad Backstab!");
+            damage = Math.Max(4, Attack + 6);
+        }
+        else
+        {
+            Console.WriteLine("Backstab misslyckades!");
+            damage = 1;
+        }
+        
+        return damage;
+    }
+    
+    private int WarriorSpecialAttack(Enemy enemy)
+    {
+        //specialattack som gör mer skada men spelaren tar 2 skada när den används
+        Console.WriteLine("Warrior använder Heavy Strike!");
+        int damage = Math.Max(2, Attack + 3 - enemy.Defence);
+        TakeDamage(2); // självskada
+        return damage;
+    }
+
+    private int MageSpecialAttack(Enemy enemy)
+    {
+        //Specialattak som gör mycket skada men kostar guld att använda
+        int damage;
+        if (_gold >= 3)
+        {
+            Console.WriteLine("Mage kastar Fireball!");
+            RemoveGold(3);
+            damage = Math.Max(3, Attack + 5 - (enemy.Defence / 2));
+        }
+        else
+        {
+            Console.WriteLine("Inte tillräckligt med guld för att kasta Fireball (kostar 3).");
+            damage = 0;
+        }
+        return damage;
     }
 }

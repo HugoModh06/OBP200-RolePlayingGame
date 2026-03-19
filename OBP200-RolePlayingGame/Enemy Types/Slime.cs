@@ -9,5 +9,5 @@ public class Slime : IEnemyTypePresets
     public int Defence => 0;
     public int GoldReward => 3;
     public bool IsBoss => false;
-    public int XpReward => 5;
+    public int ExperienceReward => 5;
 }
