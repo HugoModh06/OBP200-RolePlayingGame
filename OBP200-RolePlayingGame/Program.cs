@@ -13,7 +13,7 @@ class Program
     static Player _player = new Player();
     
     //en lista med olika typer av loot man kan få från kistor
-    static List<Loot> _lootTable = new List<Loot>();
+    static List<Loot> _chestLootTable = new List<Loot>();
     
     //enemy objekt, hanterar all/det mesta data om fiender
     static Enemy _enemy = new Enemy();
@@ -41,7 +41,7 @@ class Program
         Console.OutputEncoding = Encoding.UTF8;
         InitaliseEnemyTemplates();
         InitalisePlayerTemplates();
-        CreateLootTable();
+        CreateChestLootTable();
         while (true)
         {
             ShowMainMenu();
@@ -99,9 +99,6 @@ class Program
         {
             _player.GeneratePlayer(_playerTemplates[classChoice], name);
         }
-        
-        _player.AddLoot("Wooden Sword", 0);
-        _player.AddLoot("Cloth Armor", 0);
         
         // Initiera karta (linjärt äventyr)
         Rooms.Clear();
@@ -201,11 +198,12 @@ class Program
 
             if (cmd == "A")
             {
-                _enemy.TakeDamage(_player.CalculateDamage(_enemy));
+                _enemy.TakeDamage(_player.CalculateDamage(_enemy.Defence));
             }
             else if (cmd == "X")
             { 
-                _player.UseSpecialAttack(_enemy);
+                int specialDamage=_player.UseSpecialAttack(_enemy.Defence, _enemy.IsBoss);
+                _enemy.TakeDamage(specialDamage);
             }
             else if (cmd == "P")
             {
@@ -229,7 +227,7 @@ class Program
             if (_enemy.CheckIfDead()) break;
 
             // Fiendens tur
-            _player.TakeDamage(_enemy.CalculateDamage(_player));
+            _player.TakeDamage(_enemy.CalculateDamage(_player.Defence));
         }
 
         if (_player.CheckIfDead())
@@ -238,12 +236,11 @@ class Program
         }
 
         // Vinstrapporter, XP, guld, loot
-        _player.AddPlayerXp(_enemy.ExperienceReward);
+        _player.AddPlayerExperience(_enemy.ExperienceReward);
         _player.AddPlayerGold(_enemy.GoldReward);
 
         Console.WriteLine($"Seger! +{_enemy.ExperienceReward} XP, +{_enemy.GoldReward} guld.");
-        _enemy.MaybeDropLoot(_player);
-        
+        _player.AddLoot(_enemy.MaybeDropLoot());
         return true;
     }
     
@@ -292,8 +289,8 @@ class Program
         else
         {
             
-            Loot found = _lootTable[Rng.Next(_lootTable.Count)];
-            _player.AddLoot(found.Name,found.Value);
+            Loot found = _chestLootTable[Rng.Next(_chestLootTable.Count)];
+            _player.AddLoot(found);
             Console.WriteLine($"Du plockar upp: {found.Name}");
         }
         return true;
@@ -375,11 +372,11 @@ class Program
     }
     
     //skapar ett "loot table" med olika typer av loot man kan få från en kista och ger dem värde
-    static void CreateLootTable()
+    static void CreateChestLootTable()
     {
-        _lootTable.Add(new Loot("Iron Dagger", 5));
-        _lootTable.Add(new Loot("Oak Staff", 3));
-        _lootTable.Add(new Loot("Leather Vest", 4));
-        _lootTable.Add(new Loot("Healing Herb", 2));
+        _chestLootTable.Add(new Loot("Iron Dagger", 5));
+        _chestLootTable.Add(new Loot("Oak Staff", 3));
+        _chestLootTable.Add(new Loot("Leather Vest", 4));
+        _chestLootTable.Add(new Loot("Healing Herb", 2));
     }
 }

@@ -5,8 +5,7 @@ namespace OBP200_RolePlayingGame;
 public class Rouge : IPlayerRolePresets
 {
     public string RolePresetName => "Rouge";
-    
-
+    Random Rng = new Random();
     public int StartingMaxHeath => 40;
     public int StartingAttack => 7;
     public int StartingDefence => 5;
@@ -21,7 +20,6 @@ public class Rouge : IPlayerRolePresets
     public int BaseDamageModifer()
     {
         //crit chans
-        Random Rng = new Random();
         if (Rng.NextDouble() < 0.2)
         {
             return 4;

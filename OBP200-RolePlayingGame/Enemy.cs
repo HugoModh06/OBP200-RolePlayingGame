@@ -51,9 +51,9 @@ public class Enemy : Character
     }
     
     
-    public override int CalculateDamage(Character target)
+    public override int CalculateDamage(int targetDefence)
     {
-        int damage = Math.Max(1, Attack-(target.Defence/2));
+        int damage = Math.Max(1, Attack-(targetDefence/2));
         int extraDamageRoll = Rng.Next(0, 3);
         damage += extraDamageRoll;
         
@@ -66,7 +66,9 @@ public class Enemy : Character
         return damage;
     }
     
-    public void MaybeDropLoot(Player player)
+    
+    
+    public Loot MaybeDropLoot()
     {
         // Enkel loot-regel, fiende har ca 35% chans att ge loot
         if (Rng.NextDouble() < 0.35)
@@ -80,8 +82,10 @@ public class Enemy : Character
                 itemValue = 25;
             }
             
-            player.AddLoot(itemName, itemValue);
+            
             Console.WriteLine($"Föremål hittat: {itemName} (lagt i din väska)");
+            return new Loot(itemName, itemValue);
         }
+        return new Loot("Worthless Rock", 0);
     }
 }

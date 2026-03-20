@@ -6,14 +6,14 @@ namespace OBP200_RolePlayingGame;
 public class Player : Character
 {
     static readonly Random Rng = new Random();
-    private IPlayerRolePresets _playerRolePreset;
+    private IPlayerRolePresets? _playerRolePreset;
     private int _gold;
     private int _potions;
     private int _level;
     private int _experience;
     
     //Spelarens förråd/väska där loot sparas
-    private List<Loot> _inventory =new();
+    private readonly List<Loot> _inventory =new();
     
     
     //metod som sätter alla värden utifrån en mall
@@ -30,8 +30,8 @@ public class Player : Character
         _level = 1;
         _experience = 0;
         _inventory.Clear();
-        _inventory.Add(new Loot("Wooden Sword", 0 ));
-        _inventory.Add(new Loot("Cloth Armor", 0 ));
+        AddLoot(new Loot("Wooden Sword", 0 ));
+        AddLoot(new Loot("Cloth Armor", 0 ));
         
         Console.WriteLine($"Välkommen, {Name} the {_playerRolePreset.RolePresetName}!");
     }
@@ -53,7 +53,7 @@ public class Player : Character
     }
     
     //ökar hur mycket xp spelaren har och kollar om man levelar upp
-    public void AddPlayerXp(int amount)
+    public void AddPlayerExperience(int amount)
     {
         _experience+=amount;
         MaybeLevelUp();
@@ -115,9 +115,10 @@ public class Player : Character
         }
     }
     
-    public void AddLoot(string name, int value)
+    
+    public void AddLoot(Loot loot)
     {
-        _inventory.Add(new Loot(name, value));
+        _inventory.Add(loot);
     }
     
     //försöka köpa ur butiken. buffType är vad man ska köpa (1 är potions, 2 attak och 3 defense) och strength är hur mycket de ökar
@@ -179,9 +180,9 @@ public class Player : Character
     }
     
     //Räknar ut hur mycket skada man gör
-    public override int CalculateDamage(Character target)
+    public override int CalculateDamage(int targetDefence)
     {
-        int damage = Math.Max(1, Attack-(target.Defence/2));
+        int damage = Math.Max(1, Attack-(targetDefence/2));
         damage += _playerRolePreset.BaseDamageModifer(); //ökar skada baserad på klass, som rouges chans för kritisk träff
         int extraDamageRoll = Rng.Next(0, 3); //slumpad värde för att ge mindre variation i hur mycket skada man gör
         damage += extraDamageRoll;
@@ -217,7 +218,7 @@ public class Player : Character
         _potions--;
     }
     
-    public void UseSpecialAttack(Enemy target)
+    public int UseSpecialAttack(int targetDefence, bool isBoss)
     {
         int damage;
         //väljer vilken specialattack som används. Om den inte har en registrerad klass (vilket borde vara omöjligt) körs Warrior som standard, samma som i ursprungsprogrammet
@@ -225,12 +226,12 @@ public class Player : Character
         {
             case Warrior:
             {
-                damage = WarriorSpecialAttack(target);
+                damage = WarriorSpecialAttack(targetDefence);
                 break;
             }
             case Mage:
             {
-                damage = MageSpecialAttack(target);
+                damage = MageSpecialAttack(targetDefence);
                 break;
             }
             case Rouge:
@@ -240,19 +241,20 @@ public class Player : Character
             }
             default:
             {
-                damage=WarriorSpecialAttack(target);
+                damage=WarriorSpecialAttack(targetDefence);
                 break;
             }
         }
         
         //bossfiender tar 20% mindre damage av en backstab
-        if (target.IsBoss)
+        if (isBoss)
         {
             damage = (int)Math.Round(damage * 0.8);
         }
         
-        target.TakeDamage(damage);
+        
         Console.WriteLine($"Special! {Name} anfaller och gör {damage} skada.");
+        return damage;
     }
 
     private int RougeSpecialAttack()
@@ -274,16 +276,16 @@ public class Player : Character
         return damage;
     }
     
-    private int WarriorSpecialAttack(Enemy enemy)
+    private int WarriorSpecialAttack(int enemyDefence)
     {
         //specialattack som gör mer skada men spelaren tar 2 skada när den används
         Console.WriteLine("Warrior använder Heavy Strike!");
-        int damage = Math.Max(2, Attack + 3 - enemy.Defence);
+        int damage = Math.Max(2, Attack + 3 - enemyDefence);
         TakeDamage(2); // självskada
         return damage;
     }
 
-    private int MageSpecialAttack(Enemy enemy)
+    private int MageSpecialAttack(int enemyDefence)
     {
         //Specialattak som gör mycket skada men kostar guld att använda
         int damage;
@@ -291,7 +293,7 @@ public class Player : Character
         {
             Console.WriteLine("Mage kastar Fireball!");
             RemoveGold(3);
-            damage = Math.Max(3, Attack + 5 - (enemy.Defence / 2));
+            damage = Math.Max(3, Attack + 5 - (enemyDefence / 2));
         }
         else
         {

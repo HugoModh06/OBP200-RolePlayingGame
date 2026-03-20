@@ -20,4 +20,5 @@ public interface IPlayerRolePresets
     
     //base damage tillläg för klasser, samt hanterar critical hits för rouge
     int BaseDamageModifer();
+
 }

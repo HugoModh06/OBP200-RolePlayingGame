@@ -9,7 +9,7 @@ public abstract class Character
     public int Defence {get; protected set;}
 
     public abstract void ShowStatus();
-    public abstract int CalculateDamage(Character target);
+    public abstract int CalculateDamage(int targetDefence);
     public void TakeDamage(int damage)
     {
         CurrentHealth -= damage;
@@ -24,9 +24,4 @@ public abstract class Character
         
         return false;
     }
-}
-
-public interface IAttackCapable
-{
-    int CalculateDamage(Character target);
 }
