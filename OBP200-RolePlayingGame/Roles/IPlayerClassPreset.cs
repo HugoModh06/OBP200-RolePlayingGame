@@ -2,7 +2,7 @@ namespace OBP200_RolePlayingGame;
 
 public interface IPlayerRolePresets
 {
-    //Standardvärden för varje klass som sätts vid start
+    //Standardvärden för stats för varje klass som sätts vid start
     string RolePresetName { get; }
     int StartingMaxHeath { get; }
     int StartingAttack { get; }

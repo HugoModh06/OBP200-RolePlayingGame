@@ -10,29 +10,29 @@ class Program
     // ======= Globalt tillstånd  =======
     
     //player objekt, hanterar all/det mesta data om spelaren
-    static Player _player = new Player();
+    static readonly Player Player = new Player();
     
     //en lista med olika typer av loot man kan få från kistor
-    static List<Loot> _chestLootTable = new List<Loot>();
+    static readonly List<Loot> ChestLootTable = new List<Loot>();
     
     //enemy objekt, hanterar all/det mesta data om fiender
-    static Enemy _enemy = new Enemy();
+    static readonly Enemy Enemy = new Enemy();
     
     // Rum: [type, label]
     // types: battle, treasure, shop, rest, boss
-    static List<string[]> Rooms = new List<string[]>();
+    static readonly List<string[]> Rooms = new List<string[]>();
 
     // Fiendemallar, 
-    static List<IEnemyTypePresets> _enemyTemplates = new();
+    static readonly List<IEnemyTypePresets> EnemyTemplates = new();
     
     //en lista med mallar för olika spelarklasser. 
-    private static List<IPlayerRolePresets> _playerTemplates = new();
+    private static readonly List<IPlayerRolePresets> PlayerTemplates = new();
     
     // Status för kartan
-    static int CurrentRoomIndex = 0;
+    static int _currentRoomIndex;
 
     // Random
-    static Random Rng = new Random();
+    static readonly Random Rng = new Random();
 
     // ======= Main =======
 
@@ -76,6 +76,22 @@ class Program
         Console.WriteLine("1. Nytt spel");
         Console.WriteLine("2. Avsluta");
     }
+    
+    static void InitalisePlayerTemplates()
+    {
+        PlayerTemplates.Add(new Warrior());
+        PlayerTemplates.Add(new Mage());
+        PlayerTemplates.Add(new Rouge());
+    }
+    
+    //skapar ett "loot table" med olika typer av loot man kan få från en kista och ger dem värde
+    static void CreateChestLootTable()
+    {
+        ChestLootTable.Add(new Loot("Iron Dagger", 5));
+        ChestLootTable.Add(new Loot("Oak Staff", 3));
+        ChestLootTable.Add(new Loot("Leather Vest", 4));
+        ChestLootTable.Add(new Loot("Healing Herb", 2));
+    }
 
     static void StartNewGame()
     {
@@ -90,14 +106,14 @@ class Program
         int classChoice = AtemptToParseInt(k, 0);
         
         //Mall för spelarens klass väljs baserad på värdet av inmatning. 
-        int playerTemplateListLength = _playerTemplates.Count - 1;
+        int playerTemplateListLength = PlayerTemplates.Count - 1;
         if (classChoice > playerTemplateListLength || classChoice<0)  //deafultar till en klass om instoppade värdet inte finns som ett index
         {
-            _player.GeneratePlayer(_playerTemplates[0], name);
+            Player.GeneratePlayer(PlayerTemplates[0], name);
         }
         else
         {
-            _player.GeneratePlayer(_playerTemplates[classChoice], name);
+            Player.GeneratePlayer(PlayerTemplates[classChoice], name);
         }
         
         // Initiera karta (linjärt äventyr)
@@ -110,19 +126,19 @@ class Program
         Rooms.Add(new[] { "battle", "Grottans djup" });
         Rooms.Add(new[] { "boss", "Urdraken" });
 
-        CurrentRoomIndex = 0;
+        _currentRoomIndex = 0;
     }
 
     static void RunGameLoop()
     {
         while (true)
         {
-            var room = Rooms[CurrentRoomIndex];
-            Console.WriteLine($"--- Rum {CurrentRoomIndex + 1}/{Rooms.Count}: {room[1]} ({room[0]}) ---");
+            var room = Rooms[_currentRoomIndex];
+            Console.WriteLine($"--- Rum {_currentRoomIndex + 1}/{Rooms.Count}: {room[1]} ({room[0]}) ---");
 
             bool continueAdventure = EnterRoom(room[0]);
             
-            if (_player.CheckIfDead())
+            if (Player.CheckIfDead())
             {
                 Console.WriteLine("Du har stupat... Spelet över.");
                 break;
@@ -134,9 +150,9 @@ class Program
                 break;
             }
 
-            CurrentRoomIndex++;
+            _currentRoomIndex++;
             
-            if (CurrentRoomIndex >= Rooms.Count)
+            if (_currentRoomIndex >= Rooms.Count)
             {
                 Console.WriteLine();
                 Console.WriteLine("Du har klarat äventyret!");
@@ -186,11 +202,11 @@ class Program
     {
         CreateEnemy(isBoss);
 
-        while (!_enemy.CheckIfDead() && !_player.CheckIfDead())
+        while (!Enemy.CheckIfDead() && !Player.CheckIfDead())
         {
             Console.WriteLine();
-            _player.ShowStatus();
-            _enemy.ShowStatus();
+            Player.ShowStatus();
+            Enemy.ShowStatus();
             Console.WriteLine("[A] Attack   [X] Special   [P] Dryck   [R] Fly");
             Console.Write("Val: ");
             
@@ -198,20 +214,20 @@ class Program
 
             if (cmd == "A")
             {
-                _enemy.TakeDamage(_player.CalculateDamage(_enemy.Defence));
+                Enemy.TakeDamage(Player.CalculateDamage(Enemy.Defence));
             }
             else if (cmd == "X")
             { 
-                int specialDamage=_player.UseSpecialAttack(_enemy.Defence, _enemy.IsBoss);
-                _enemy.TakeDamage(specialDamage);
+                int specialDamage=Player.UseSpecialAttack(Enemy.Defence, Enemy.IsBoss);
+                Enemy.TakeDamage(specialDamage);
             }
             else if (cmd == "P")
             {
-                _player.DrinkPotion();
+                Player.DrinkPotion();
             }
             else if (cmd == "R" && !isBoss)
             {
-                if (_player.TryRunAway())
+                if (Player.TryRunAway())
                 {
                     Console.WriteLine("Du flydde!");
                     return true; // fortsätt äventyr
@@ -224,23 +240,23 @@ class Program
                 Console.WriteLine("Du tvekar...");
             }
 
-            if (_enemy.CheckIfDead()) break;
+            if (Enemy.CheckIfDead()) break;
 
             // Fiendens tur
-            _player.TakeDamage(_enemy.CalculateDamage(_player.Defence));
+            Player.TakeDamage(Enemy.CalculateDamage(Player.Defence));
         }
 
-        if (_player.CheckIfDead())
+        if (Player.CheckIfDead())
         {
             return false;
         }
 
         // Vinstrapporter, XP, guld, loot
-        _player.AddPlayerExperience(_enemy.ExperienceReward);
-        _player.AddPlayerGold(_enemy.GoldReward);
+        Player.AddPlayerExperience(Enemy.ExperienceReward);
+        Player.AddPlayerGold(Enemy.GoldReward);
 
-        Console.WriteLine($"Seger! +{_enemy.ExperienceReward} XP, +{_enemy.GoldReward} guld.");
-        _player.AddLoot(_enemy.MaybeDropLoot());
+        Console.WriteLine($"Seger! +{Enemy.ExperienceReward} XP, +{Enemy.GoldReward} guld.");
+        Player.AddLoot(Enemy.MaybeDropLoot());
         return true;
     }
     
@@ -250,29 +266,26 @@ class Program
         if (isBoss)
         {
             // Genererar fienden och sätter värden utifrån en boss-mall istället för vanlig fiende
-            _enemy.GenerateEnemy(new Dragon());
+            Enemy.GenerateEnemy(new Dragon());
         }
         else
         {
             // Slumpa bland templates
-            var template = _enemyTemplates[Rng.Next(_enemyTemplates.Count)];
+            var template = EnemyTemplates[Rng.Next(EnemyTemplates.Count)];
             
             // Genererar fienden och sätter värden
-            _enemy.GenerateEnemy(template);
+            Enemy.GenerateEnemy(template);
         }
     }
     
     //Lägger till templates för fiender i listan för att senare slumpa fram en av dem vid strid
     static void InitaliseEnemyTemplates()
     {
-        _enemyTemplates.Add(new Skeleton());
-        _enemyTemplates.Add(new Bandit());
-        _enemyTemplates.Add(new Beast());
-        _enemyTemplates.Add(new Slime());
+        EnemyTemplates.Add(new Skeleton());
+        EnemyTemplates.Add(new Bandit());
+        EnemyTemplates.Add(new Beast());
+        EnemyTemplates.Add(new Slime());
     }
-    
-    
-
     
 
     // ======= Rumshändelser =======
@@ -283,14 +296,14 @@ class Program
         if (Rng.NextDouble() < 0.5)
         {
             int gold = Rng.Next(8, 15);
-            _player.AddPlayerGold(gold);
+            Player.AddPlayerGold(gold);
             Console.WriteLine($"Kistan innehåller {gold} guld!");
         }
         else
         {
             
-            Loot found = _chestLootTable[Rng.Next(_chestLootTable.Count)];
-            _player.AddLoot(found);
+            Loot found = ChestLootTable[Rng.Next(ChestLootTable.Count)];
+            Player.AddLoot(found);
             Console.WriteLine($"Du plockar upp: {found.Name}");
         }
         return true;
@@ -301,7 +314,7 @@ class Program
         Console.WriteLine("En vandrande köpman erbjuder sina varor:");
         while (true)
         {
-            _player.PrintShopRelevantStats();
+            Player.PrintShopRelevantStats();
             Console.WriteLine("1) Köp dryck (10 guld)");
             Console.WriteLine("2) Köp vapen (+2 ATK) (25 guld)");
             Console.WriteLine("3) Köp rustning (+2 DEF) (25 guld)");
@@ -312,19 +325,19 @@ class Program
 
             if (val == "1")
             {
-                _player.AttemptToBuy(10, 1, 1);
+                Player.AttemptToBuy(10, 1, 1);
             }
             else if (val == "2")
             {
-                _player.AttemptToBuy(25, 3, 2);
+                Player.AttemptToBuy(25, 3, 2);
             }
             else if (val == "3")
             {
-                _player.AttemptToBuy(25, 3, 2);
+                Player.AttemptToBuy(25, 3, 2);
             }
             else if (val == "4")
             {
-                _player.SellLoot("Minor Gem");
+                Player.SellLoot("Minor Gem");
             }
             else if (val == "5")
             {
@@ -344,19 +357,11 @@ class Program
     static bool DoRest()
     {
         Console.WriteLine("Du slår läger och vilar.");
-        _player.HealThroughRest();
+        Player.HealThroughRest();
         Console.WriteLine("HP återställt till max.");
         return true;
     }
-
     
-    
-    static void InitalisePlayerTemplates()
-    {
-        _playerTemplates.Add(new Warrior());
-        _playerTemplates.Add(new Mage());
-        _playerTemplates.Add(new Rouge());
-    }
     
     static int AtemptToParseInt(string s, int fallback)
     {
@@ -371,12 +376,5 @@ class Program
         }
     }
     
-    //skapar ett "loot table" med olika typer av loot man kan få från en kista och ger dem värde
-    static void CreateChestLootTable()
-    {
-        _chestLootTable.Add(new Loot("Iron Dagger", 5));
-        _chestLootTable.Add(new Loot("Oak Staff", 3));
-        _chestLootTable.Add(new Loot("Leather Vest", 4));
-        _chestLootTable.Add(new Loot("Healing Herb", 2));
-    }
+    
 }

@@ -2,7 +2,7 @@ using System;
 
 namespace OBP200_RolePlayingGame;
 
-public class Enemy : Character
+public class Enemy : GameCharacter
 {
     static readonly Random Rng = new Random();
     private IEnemyTypePresets _type;

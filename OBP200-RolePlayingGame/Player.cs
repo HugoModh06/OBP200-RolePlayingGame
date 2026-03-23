@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace OBP200_RolePlayingGame;
 
-public class Player : Character
+public class Player : GameCharacter
 {
-    static readonly Random Rng = new Random();
-    private IPlayerRolePresets? _playerRolePreset;
+    private static readonly Random Rng = new Random();
+    private IPlayerRolePresets _playerRolePreset;
     private int _gold;
     private int _potions;
     private int _level;
@@ -17,10 +17,10 @@ public class Player : Character
     
     
     //metod som sätter alla värden utifrån en mall
-    public void GeneratePlayer(IPlayerRolePresets playerClassPresetPreset, string name)
+    public void GeneratePlayer(IPlayerRolePresets playerRolePreset, string name)
     {
         Name = name;
-        _playerRolePreset = playerClassPresetPreset;
+        _playerRolePreset = playerRolePreset;
         MaxHealth = _playerRolePreset.StartingMaxHeath;
         CurrentHealth = MaxHealth;
         Attack = _playerRolePreset.StartingAttack;
@@ -106,7 +106,7 @@ public class Player : Character
         _gold += goldLoot;
     }
 
-    private void RemoveGold(int amount)
+    private void RemovePLayerGold(int amount)
     {
         _gold -= amount;
         if (_gold < 0)
@@ -144,7 +144,7 @@ public class Player : Character
                     break;
                 }
             }
-            RemoveGold(cost);
+            RemovePLayerGold(cost);
             Console.WriteLine($"Köp lyckats.");
         }
         else
@@ -292,7 +292,7 @@ public class Player : Character
         if (_gold >= 3)
         {
             Console.WriteLine("Mage kastar Fireball!");
-            RemoveGold(3);
+            RemovePLayerGold(3);
             damage = Math.Max(3, Attack + 5 - (enemyDefence / 2));
         }
         else

@@ -1,6 +1,6 @@
 namespace OBP200_RolePlayingGame;
-//Abstrakt klass som både player och enemy ärver från då båda har liknande egenskaper
-public abstract class Character
+//Abstrakt klass som både player och enemy ärver från då båda har vissa liknande egenskaper
+public abstract class GameCharacter
 {
     protected int CurrentHealth;
     protected int MaxHealth;
@@ -8,8 +8,14 @@ public abstract class Character
     protected int Attack;
     public int Defence {get; protected set;}
 
-    public abstract void ShowStatus();
-    public abstract int CalculateDamage(int targetDefence);
+    public virtual void ShowStatus()
+    {
+        
+    }
+    public virtual int CalculateDamage(int targetDefence)
+    {
+        return 0;
+    }
     public void TakeDamage(int damage)
     {
         CurrentHealth -= damage;
