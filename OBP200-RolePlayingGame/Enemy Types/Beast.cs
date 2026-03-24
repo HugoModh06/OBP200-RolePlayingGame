@@ -1,6 +1,6 @@
 namespace OBP200_RolePlayingGame;
 
-public class Beast :IEnemyTypePresets
+public class Beast :IEnemyTypePreset
 {
     public string Name => "Vildsvin";
     public int MaxHealth => 18;

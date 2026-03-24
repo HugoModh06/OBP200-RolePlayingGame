@@ -1,6 +1,6 @@
 namespace OBP200_RolePlayingGame;
 
-public class Bandit :IEnemyTypePresets
+public class Bandit :IEnemyTypePreset
 {
     public string Name => "Bandit";
     public int MaxHealth => 16;

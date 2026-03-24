@@ -2,7 +2,7 @@ using System;
 
 namespace OBP200_RolePlayingGame;
 
-public class Mage : IPlayerRolePresets
+public class Mage : IPlayerRolePreset
 {
     public string RolePresetName => "Mage";
 

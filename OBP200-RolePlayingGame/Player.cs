@@ -6,7 +6,7 @@ namespace OBP200_RolePlayingGame;
 public class Player : GameCharacter
 {
     private static readonly Random Rng = new Random();
-    private IPlayerRolePresets _playerRolePreset;
+    private IPlayerRolePreset _playerRolePreset;
     private int _gold;
     private int _potions;
     private int _level;
@@ -17,7 +17,7 @@ public class Player : GameCharacter
     
     
     //metod som sätter alla värden utifrån en mall
-    public void GeneratePlayer(IPlayerRolePresets playerRolePreset, string name)
+    public void GeneratePlayer(IPlayerRolePreset playerRolePreset, string name)
     {
         Name = name;
         _playerRolePreset = playerRolePreset;
@@ -52,14 +52,12 @@ public class Player : GameCharacter
         return Rng.NextDouble() < _playerRolePreset.RunAwayFactor;
     }
     
-    //ökar hur mycket xp spelaren har och kollar om man levelar upp
     public void AddPlayerExperience(int amount)
     {
         _experience+=amount;
         MaybeLevelUp();
     }
     
-    //kolla om spelaren kommer levla upp
     private void MaybeLevelUp()
     {
         // Nivåtrösklar, hur mycket experience som behövs för att nå en vis level
@@ -121,6 +119,14 @@ public class Player : GameCharacter
         _inventory.Add(loot);
     }
     
+    
+    //============  Metoder för shop ===========
+    
+    public void PrintShopRelevantStats()
+    {
+        Console.WriteLine($"Guld: {_gold} | Drycker: {_potions}");
+    }
+    
     //försöka köpa ur butiken. buffType är vad man ska köpa (1 är potions, 2 attak och 3 defense) och strength är hur mycket de ökar
     public void AttemptToBuy(int cost, int buffType, int buffStrength)
     {
@@ -179,12 +185,13 @@ public class Player : GameCharacter
         }
     }
     
+    
     //Räknar ut hur mycket skada man gör
     public override int CalculateDamage(int targetDefence)
     {
         int damage = Math.Max(1, Attack-(targetDefence/2));
         damage += _playerRolePreset.BaseDamageModifer(); //ökar skada baserad på klass, som rouges chans för kritisk träff
-        int extraDamageRoll = Rng.Next(0, 3); //slumpad värde för att ge mindre variation i hur mycket skada man gör
+        int extraDamageRoll = Rng.Next(0, 3); //slumpad värde för att ge liten variation i hur mycket skada man gör
         damage += extraDamageRoll;
         Console.WriteLine($"{Name} anfaller och gör {damage} skada!");
         return damage;
@@ -196,11 +203,7 @@ public class Player : GameCharacter
         CurrentHealth=MaxHealth;
     }
     
-    //skriver ut värden som är relevanta för när man är i shop
-    public void PrintShopRelevantStats()
-    {
-        Console.WriteLine($"Guld: {_gold} | Drycker: {_potions}");
-    }
+    
     
     public void DrinkPotion()
     {
@@ -222,19 +225,19 @@ public class Player : GameCharacter
     {
         int damage;
         //väljer vilken specialattack som används. Om den inte har en registrerad klass (vilket borde vara omöjligt) körs Warrior som standard, samma som i ursprungsprogrammet
-        switch (_playerRolePreset)
+        switch (_playerRolePreset.RolePresetName)
         {
-            case Warrior:
+            case "Warrior":
             {
                 damage = WarriorSpecialAttack(targetDefence);
                 break;
             }
-            case Mage:
+            case "Mage":
             {
                 damage = MageSpecialAttack(targetDefence);
                 break;
             }
-            case Rouge:
+            case "Rouge":
             {
                 damage = RougeSpecialAttack();
                 break;

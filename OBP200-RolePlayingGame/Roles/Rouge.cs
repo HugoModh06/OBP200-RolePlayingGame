@@ -2,7 +2,7 @@ using System;
 
 namespace OBP200_RolePlayingGame;
 
-public class Rouge : IPlayerRolePresets
+public class Rouge : IPlayerRolePreset
 {
     public string RolePresetName => "Rouge";
     Random Rng = new Random();

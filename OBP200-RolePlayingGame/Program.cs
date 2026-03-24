@@ -23,10 +23,10 @@ class Program
     static readonly List<string[]> Rooms = new List<string[]>();
 
     // Fiendemallar, 
-    static readonly List<IEnemyTypePresets> EnemyTemplates = new();
+    static readonly List<IEnemyTypePreset> EnemyTemplates = new();
     
     //en lista med mallar för olika spelarklasser. 
-    private static readonly List<IPlayerRolePresets> PlayerTemplates = new();
+    private static readonly List<IPlayerRolePreset> PlayerTemplates = new();
     
     // Status för kartan
     static int _currentRoomIndex;

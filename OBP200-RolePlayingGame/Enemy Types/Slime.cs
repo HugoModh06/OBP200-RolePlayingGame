@@ -1,7 +1,7 @@
 namespace OBP200_RolePlayingGame;
 
 
-public class Slime : IEnemyTypePresets
+public class Slime : IEnemyTypePreset
 {
     public string Name => "Geléslem";
     public int MaxHealth => 14;

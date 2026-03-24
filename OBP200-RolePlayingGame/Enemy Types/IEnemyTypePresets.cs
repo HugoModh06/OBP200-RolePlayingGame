@@ -1,6 +1,6 @@
 namespace OBP200_RolePlayingGame;
 
-public interface IEnemyTypePresets
+public interface IEnemyTypePreset
 {
     //Standardvärden för fiender, olika för olika typer av fiender.
     string Name { get; }

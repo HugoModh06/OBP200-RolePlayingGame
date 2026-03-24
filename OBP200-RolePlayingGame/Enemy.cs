@@ -5,42 +5,43 @@ namespace OBP200_RolePlayingGame;
 public class Enemy : GameCharacter
 {
     static readonly Random Rng = new Random();
-    private IEnemyTypePresets _type;
+    private IEnemyTypePreset _enemyType;
     public int GoldReward{ get; private set;}
     public int ExperienceReward { get; private set;}
     public bool IsBoss { get; private set; }
     
     //skapar en fiende baserad på en mall
-    public void GenerateEnemy(IEnemyTypePresets enemyType)
+    public void GenerateEnemy(IEnemyTypePreset enemyType)
     {
-        _type = enemyType;
-        Name=_type.Name;
-        IsBoss=_type.IsBoss;
+        _enemyType = enemyType;
+        Name=_enemyType.Name;
+        IsBoss=_enemyType.IsBoss;
         
         
         if (IsBoss == false)
         {
             //om en fiende inte är boss sker en liten slumpmässig justering av statsen,
             MaxHealth = enemyType.MaxHealth+ Rng.Next(-1, 3);
-            Attack = _type.Attack+ Rng.Next(0, 2);
-            Defence = _type.Defence + Rng.Next(0, 2);
-            GoldReward = _type.GoldReward+ Rng.Next(0, 3);
-            ExperienceReward = _type.ExperienceReward+ Rng.Next(0, 3);
+            Attack = _enemyType.Attack+ Rng.Next(0, 2);
+            Defence = _enemyType.Defence + Rng.Next(0, 2);
+            GoldReward = _enemyType.GoldReward+ Rng.Next(0, 3);
+            ExperienceReward = _enemyType.ExperienceReward+ Rng.Next(0, 3);
         }
         else
         {
             //boss fiender har alltid samma värden
             MaxHealth = enemyType.MaxHealth;
-            Attack = _type.Attack;
-            Defence = _type.Defence;
-            GoldReward = _type.GoldReward;
-            ExperienceReward = _type.ExperienceReward;
+            Attack = _enemyType.Attack;
+            Defence = _enemyType.Defence;
+            GoldReward = _enemyType.GoldReward;
+            ExperienceReward = _enemyType.ExperienceReward;
         }
         CurrentHealth = MaxHealth;
         
         Console.WriteLine($"En {Name} dyker upp! (HP {CurrentHealth}, ATK {Attack}, DEF {Defence})");
     }
-
+    
+    //Visar status av fienden
     public override void ShowStatus()
     {
         Console.WriteLine($"Fiende: {Name} HP={CurrentHealth}");

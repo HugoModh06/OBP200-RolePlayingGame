@@ -1,6 +1,6 @@
 namespace OBP200_RolePlayingGame;
 
-public class Skeleton :IEnemyTypePresets
+public class Skeleton :IEnemyTypePreset
 {
     public string Name => "Skelett";
     public int MaxHealth => 20;

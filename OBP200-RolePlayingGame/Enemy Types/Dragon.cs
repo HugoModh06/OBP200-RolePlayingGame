@@ -1,6 +1,6 @@
 namespace OBP200_RolePlayingGame;
 
-public class Dragon :IEnemyTypePresets
+public class Dragon :IEnemyTypePreset
 {
     public string Name => "Urdraken";
     public int MaxHealth => 20;

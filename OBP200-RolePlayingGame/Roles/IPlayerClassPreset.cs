@@ -1,6 +1,6 @@
 namespace OBP200_RolePlayingGame;
 
-public interface IPlayerRolePresets
+public interface IPlayerRolePreset
 {
     //Standardvärden för stats för varje klass som sätts vid start
     string RolePresetName { get; }

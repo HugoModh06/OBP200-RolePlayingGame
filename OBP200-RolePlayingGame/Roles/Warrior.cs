@@ -3,7 +3,7 @@ using System;
 namespace OBP200_RolePlayingGame;
 
 
-public class Warrior : IPlayerRolePresets
+public class Warrior : IPlayerRolePreset
 {
     public string RolePresetName => "Warrior";
 
