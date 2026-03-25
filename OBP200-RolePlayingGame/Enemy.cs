@@ -18,7 +18,7 @@ public class Enemy : GameCharacter
         IsBoss=_enemyType.IsBoss;
         
         
-        if (IsBoss == false)
+        if (!IsBoss)
         {
             //om en fiende inte är boss sker en liten slumpmässig justering av statsen,
             MaxHealth = enemyType.MaxHealth+ Rng.Next(-1, 3);
