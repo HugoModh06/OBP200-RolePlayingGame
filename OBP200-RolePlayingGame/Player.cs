@@ -221,6 +221,9 @@ public class Player : GameCharacter
         _potions--;
     }
     
+    
+    
+    //======= Specialattacker ========
     public int UseSpecialAttack(int targetDefence, bool isBoss)
     {
         int damage;
@@ -249,7 +252,7 @@ public class Player : GameCharacter
             }
         }
         
-        //bossfiender tar 20% mindre damage av en backstab
+        //bossfiender tar 20% mindre damage av specialattacker
         if (isBoss)
         {
             damage = (int)Math.Round(damage * 0.8);
