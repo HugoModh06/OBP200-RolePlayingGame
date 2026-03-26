@@ -128,23 +128,23 @@ public class Player : GameCharacter
     }
     
     //försöka köpa ur butiken. buffType är vad man ska köpa (1 är potions, 2 attak och 3 defense) och strength är hur mycket de ökar
-    public void AttemptToBuy(int cost, int buffType, int buffStrength)
+    public void AttemptToBuy(int cost, string buffType, int buffStrength)
     {
         if (_gold >= cost)
         {
             switch (buffType)
             {
-                case 1:
+                case "potion":
                 {
                     _potions+=buffStrength;
                     break;
                 }
-                case 2:
+                case "attack":
                 {
                     Attack += buffStrength;
                     break;
                 }
-                case 3:
+                case "defence":
                 {
                     Defence += buffStrength;
                     break;

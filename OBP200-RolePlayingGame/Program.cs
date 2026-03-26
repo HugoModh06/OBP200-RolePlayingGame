@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace OBP200_RolePlayingGame;
@@ -104,6 +105,7 @@ class Program
         var k = (Console.ReadLine() ?? "").Trim();
         //förhindrar värden som inte är int
         int classChoice = AtemptToParseInt(k, 0);
+        var sw =Stopwatch.StartNew();
         
         //Mall för spelarens klass väljs baserad på värdet av inmatning. 
         int playerTemplateListLength = PlayerTemplates.Count - 1;
@@ -115,7 +117,8 @@ class Program
         {
             Player.GeneratePlayer(PlayerTemplates[classChoice], name);
         }
-        
+        sw.Stop();
+        Console.WriteLine(sw.ElapsedMilliseconds);
         // Initiera karta (linjärt äventyr)
         Rooms.Clear();
         Rooms.Add(new[] { "battle", "Skogsstig" });
@@ -325,15 +328,15 @@ class Program
 
             if (val == "1")
             {
-                Player.AttemptToBuy(10, 1, 1);
+                Player.AttemptToBuy(10, "potion", 1);
             }
             else if (val == "2")
             {
-                Player.AttemptToBuy(25, 3, 2);
+                Player.AttemptToBuy(25, "attack", 2);
             }
             else if (val == "3")
             {
-                Player.AttemptToBuy(25, 3, 2);
+                Player.AttemptToBuy(25, "defence", 2);
             }
             else if (val == "4")
             {
