@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 
 namespace OBP200_RolePlayingGame;
@@ -105,8 +104,6 @@ class Program
         var k = (Console.ReadLine() ?? "").Trim();
         //förhindrar värden som inte är int
         int classChoice = AtemptToParseInt(k, 0);
-        var sw =Stopwatch.StartNew();
-        
         //Mall för spelarens klass väljs baserad på värdet av inmatning. 
         int playerTemplateListLength = PlayerTemplates.Count - 1;
         if (classChoice > playerTemplateListLength || classChoice<0)  //deafultar till en klass om instoppade värdet inte finns som ett index
@@ -117,8 +114,6 @@ class Program
         {
             Player.GeneratePlayer(PlayerTemplates[classChoice], name);
         }
-        sw.Stop();
-        Console.WriteLine(sw.ElapsedMilliseconds);
         // Initiera karta (linjärt äventyr)
         Rooms.Clear();
         Rooms.Add(new[] { "battle", "Skogsstig" });
